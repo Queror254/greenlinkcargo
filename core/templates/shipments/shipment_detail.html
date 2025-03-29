@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shipment Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Shipment Details</h2>
+    <table class="table table-striped table-bordered">
+        <tbody>
+            <tr>
+                <th>Client</th>
+                <td>{{ client.name }}</td>
+            </tr>
+            <tr>
+                <th>Shipment Type</th>
+                <td>{{ shipment.get_shipment_type_display }}</td>
+            </tr>
+            {% if shipment.shipment_type == "air" %}
+            <tr>
+                <th>Airway Bill</th>
+                <td>{{ shipment.airwaybill }}</td>
+            </tr>
+            {% elif shipment.shipment_type == "sea" %}
+            <tr>
+                <th>Sea Waybill</th>
+                <td>{{ shipment.seawaybill }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Weight</th>
+                <td>{{ shipment.weight }} kg</td>
+            </tr>
+            <tr>
+                <th>Volume</th>
+                <td>{{ shipment.volume }} m³</td>
+            </tr>
+            <tr>
+                <th>Origin</th>
+                <td>{{ shipment.origin }}</td>
+            </tr>
+            <tr>
+                <th>Destination</th>
+                <td>{{ shipment.destination }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ shipment.status }}</td>
+            </tr>
+            <tr>
+                <th>Rate</th>
+                <td>${{ shipment.calculate_rate }}</td>
+            </tr>
+            <tr>
+                <th>Created At</th>
+                <td>{{ shipment.created_at }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if user.role == "admin" or user.role == "staff" %}
+    <a href="{% url 'update_shipment' shipment.id %}" class="btn btn-primary">Update Shipment</a>
+    {% endif %}
+</div>
+{% endblock %}

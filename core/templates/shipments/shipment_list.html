@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Shipments{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All Shipments</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Tracking Number</th>
+                <th>Client</th>
+                <th>Shipment Type</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Rate</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shipment in shipments %}
+            <tr>
+                <td>{{ shipment.tracking_number }}</td>
+                <td>{{ shipment.client.name }}</td>
+                <td>{{ shipment.get_shipment_type_display }}</td>
+                <td>{{ shipment.origin }}</td>
+                <td>{{ shipment.destination }}</td>
+                <td>{{ shipment.status }}</td>
+                <td>${{ shipment.calculate_rate }}</td>
+                <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <a href="{% url 'shipment_detail' shipment.id %}" class="btn btn-sm btn-info">View</a>
+                    {% if user.role == "admin" or user.role == "staff" %}
+                    <a href="{% url 'update_shipment' shipment.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'generate_invoice' shipment.id %}" class="btn btn-sm btn-success">Generate
+                        Invoice</a>
+                    {% endif %}
+
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">No shipments found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

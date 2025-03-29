@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Shipment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Update Shipment</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Weight (kg):</label>
+                    <input type="number" step="0.01" name="weight" id="weight" class="form-control"
+                        value="{{ shipment.weight }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="volume" class="form-label">Volume (m³):</label>
+                    <input type="number" step="0.01" name="volume" id="volume" class="form-control"
+                        value="{{ shipment.volume }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="origin" class="form-label">Origin:</label>
+                    <select name="origin" class="form-select" id="origin" required>
+                        <option value="{{ shipment.origin }}">{{ shipment.origin }}</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="China">China</option>
+                        <option value="USA">USA</option>
+                        <option value="India Mumbai">India Mumbai</option>
+                        <option value="India New Delhi">India New Delhi</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="destination" class="form-label">Destination:</label>
+                    <select name="destination" class="form-select" id="destination" required>
+                        <option value="{{ shipment.destination }}">{{ shipment.destination }}</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="Uganda">Uganda</option>
+                        <option value="Tanzania">Tanzania</option>
+                        <option value="Rwanda">Rwanda</option>
+                        <option value="Ethiopia">Ethiopia</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Shipment Status:</label>
+                    <input type="text" name="status" id="status" class="form-control" value="{{ shipment.status }}"
+                        placeholder="In progress, received, in-transit" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Shipment</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
