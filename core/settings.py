@@ -31,8 +31,7 @@ SECRET_KEY = 'django-insecure-v5lal&ljhar3u0$%@6jt=p2qy^rir$s+!hlb&fyckc3ukqv&ai
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition   
 
@@ -41,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-     'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
     
     # Third-party
     'rest_framework',
@@ -110,7 +110,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-'''
+''' 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -126,7 +126,7 @@ DATABASES = {
     }
 }
 
-'''
+''' 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -137,6 +137,8 @@ DATABASES = {
         'PORT': config('DB_PORT'),
     }
 }
+
+''' '''
 
 
 
