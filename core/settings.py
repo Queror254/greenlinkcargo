@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v5lal&ljhar3u0$%@6jt=p2qy^rir$s+!hlb&fyckc3ukqv&ai'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'shipments',
     #handles payments, accounting, reporting
     'finance',
+    'setting_app'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -110,7 +111,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-''' 
+''' '''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -138,7 +139,7 @@ DATABASES = {
     }
 }
 
-''' '''
+''' 
 
 
 

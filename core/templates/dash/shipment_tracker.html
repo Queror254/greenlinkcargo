@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}rack Shipment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow p-4 text-center">
+                <h2 class="mb-3">Track Your Shipment</h2>
+                <form method="GET" action="{% url 'shipment_tracker' %}">
+                    <div class="mb-3">
+                        <label for="tracking_number" class="form-label fw-bold">Enter Tracking Number:</label>
+                        <input type="text" id="tracking_number" name="tracking_number" class="form-control text-center"
+                            required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Track</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if shipment %}
+<!-- Shipment Tracking Modal -->
+<div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="trackingModalLabel">Shipment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="https://t4.ftcdn.net/jpg/10/26/12/05/360_F_1026120578_WBRQAfEwcZAKa1Ke4xFIpUFb2zxvpJtB.jpg"
+                    class="img-fluid mb-3" height="70" width="70" alt="Shipment">
+                <h4 class="fw-bold">Tracking ID: {{ shipment.tracking_number }}</h4>
+                <table class="table table-bordered mt-3">
+                    <tbody>
+                        <tr class="table-secondary">
+                            <th colspan="4">Order Status</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="fw-bold">{{ shipment.status }}</td>
+                        </tr>
+                        <tr class="table-light">
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Service</th>
+                            <th>Order Date</th>
+                        </tr>
+                        <tr>
+                            <td>{{ shipment.origin }}</td>
+                            <td>{{ shipment.destination }}</td>
+                            <td>{{ shipment.shipment_type }}</td>
+                            <td>{{ shipment.created_at }}</td>
+                        </tr>
+                        <tr class="table-secondary">
+                            <th colspan="4">Shipper</th>
+                            <th colspan="2">Receiver</th>
+                        </tr>
+                        {% if client %}
+                        <tr>
+                            <td colspan="4">
+                                <strong>{{ shipment.name }}</strong><br>
+                                {{ client.email }}<br>
+                                {{ client.phone }}<br>
+                                {{ client.address }}
+                            </td>
+                            <td colspan="2">
+                                <strong>{{ shipment.receiver_name || 'N/A' }}</strong><br>
+                                {{ shipment.city }}<br>
+                                {{ shipment.address }}<br>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                <button class="btn btn-success w-100 mt-3" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto Open Modal If Shipment Found -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var myModal = new bootstrap.Modal(document.getElementById('trackingModal'));
+        myModal.show();
+    });
+</script>
+
+{% elif tracking_number %}
+<div class="container text-center mt-4">
+    <div class="alert alert-danger">No shipment found for tracking number: <strong>{{ tracking_number }}</strong>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

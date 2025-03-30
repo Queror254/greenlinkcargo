@@ -32,7 +32,7 @@
                 <td>{{ shipment.weight }} kg</td>
             </tr>
             <tr>
-                <th>Volume</th>
+                <th>CBM</th>
                 <td>{{ shipment.volume }} m³</td>
             </tr>
             <tr>
@@ -48,8 +48,8 @@
                 <td>{{ shipment.status }}</td>
             </tr>
             <tr>
-                <th>Rate</th>
-                <td>${{ shipment.calculate_rate }}</td>
+                <th>Shipment Cost</th>
+                <td>Ksh{{ shipment.shipment_cost }}</td>
             </tr>
             <tr>
                 <th>Created At</th>

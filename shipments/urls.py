@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import getall_shipment, createshipment_view, shipment_detail, update_shipment, track_shipment, generate_invoice, invoice_detail, generate_invoice_pdf, delete_shipment
+from .views import getall_shipment, shipment_tracker, createshipment_view, shipment_detail, update_shipment, track_shipment, generate_invoice, invoice_detail, generate_invoice_pdf, delete_shipment
 
 urlpatterns = [
     path('', track_shipment, name='home'),
     path('track/', track_shipment, name='track_shipment'),
+    path('track/shipment', shipment_tracker, name='shipment_tracker'),
     path('create/', createshipment_view, name='create_shipment'),
     path('all/', getall_shipment, name='getall_shipment'),
     path('<int:shipment_id>/', shipment_detail, name='shipment_detail'),

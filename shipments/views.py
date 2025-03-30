@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Shipment, Invoice
+from setting_app.models import Rates
 from clients.models import Client
 from django.urls import reverse
 from django.utils.crypto import get_random_string
@@ -18,24 +19,21 @@ def getall_shipment(request):
     
 @login_required
 def createshipment_view(request):
-    # Load all clients to display in the dropdown
     clients = Client.objects.all()
     
     if request.method == 'POST':
-        # Check if an existing client was selected
         client_id = request.POST.get('client')
         
         if client_id:
             client = get_object_or_404(Client, id=client_id)
         else:
-            # Get new client details from the form
             client_name = request.POST.get('client_name')
             client_email = request.POST.get('client_email')
             client_phone = request.POST.get('client_phone')
             client_address = request.POST.get('client_address', '')
             client_city = request.POST.get('client_city', '')
             client_postalcode = request.POST.get('client_postalcode', '')
-            # Create new client (or update existing one by email)
+
             client, created = Client.objects.get_or_create(
                 email=client_email,
                 defaults={
@@ -47,16 +45,17 @@ def createshipment_view(request):
                 }
             )
         
-        # Get shipment details
         shipment_type = request.POST.get('shipment_type')
-        # Remove direct retrieval of airwaybill/seawaybill because we want to auto-generate them
         weight = request.POST.get('weight')
         volume = request.POST.get('volume')
         origin = request.POST.get('origin')
         destination = request.POST.get('destination')
-        status = request.POST.get('status', '')  # Optional field
+        tocity = request.POST.get('city')
+        toaddress = request.POST.get('address')
+        status = request.POST.get('status', '')
+        seawaybill = request.POST.get('seawaybill', '')
+        airwaybill = request.POST.get('airwaybill', '')
 
-        # Conditional validation based on shipment type:
         if shipment_type == 'air':
             if not (shipment_type and weight and origin and destination):
                 return render(request, 'shipments/create_shipment.html', {
@@ -65,13 +64,14 @@ def createshipment_view(request):
                 })
             try:
                 weight = float(weight)
+                Airwaybill = airwaybill
             except ValueError:
                 return render(request, 'shipments/create_shipment.html', {
                     'clients': clients,
                     'error': 'Weight must be a valid number.'
                 })
-            # For air shipments, set volume to 0 (or a default)
-            volume = 0.0
+            volume = 0.0  # Default volume for air shipments
+            Seawaybill = 'N/A'
 
         elif shipment_type == 'sea':
             if not (shipment_type and volume and origin and destination):
@@ -81,33 +81,56 @@ def createshipment_view(request):
                 })
             try:
                 volume = float(volume)
+                Seawaybill = seawaybill
             except ValueError:
                 return render(request, 'shipments/create_shipment.html', {
                     'clients': clients,
                     'error': 'Volume must be a valid number.'
                 })
-            # For sea shipments, set weight to 0 (or a default)
-            weight = 0.0
+            weight = 0.0  # Default weight for sea shipments
+            Airwaybill = "N/A"
         else:
             return render(request, 'shipments/create_shipment.html', {
                 'clients': clients,
                 'error': 'Invalid shipment type.'
             })
 
-        # Create the shipment record; the model's save() method will auto-generate bills if needed.
+        # Fetch rate from the Rates model
+        rate = Rates.objects.first()  # Assuming there's only one rate record
+        if not rate:
+            return render(request, 'shipments/create_shipment.html', {
+                'clients': clients,
+                'error': 'No rate configuration found. Please set up rates in the system.'
+            })
+
+        # Calculate shipment cost
+        if shipment_type == 'air':
+            shipment_cost = weight * rate.weight_rate
+        elif shipment_type == 'sea':
+            shipment_cost = volume * rate.cbm_rate
+        else:
+            shipment_cost = 0.0  # Default case (should not happen)
+
+        # Create the shipment
         shipment = Shipment.objects.create(
             client=client,
             shipment_type=shipment_type,
+            airwaybill=Airwaybill,
+            seawaybill=Seawaybill,
             weight=weight,
             volume=volume,
             origin=origin,
             destination=destination,
-            status=status
+            city=tocity,
+            address=toaddress,
+            status=status,
+            shipment_cost=shipment_cost  # Save calculated shipment cost
         )
 
         return redirect('shipment_detail', shipment_id=shipment.id)
 
     return render(request, 'shipments/create_shipment.html', {'clients': clients})
+
 
 
 @login_required
@@ -148,6 +171,18 @@ def delete_shipment(request, shipment_id):
     shipment = get_object_or_404(Shipment, id=shipment_id)
     shipment.delete()
     return redirect('getall_shipment')
+
+def shipment_tracker(request):
+    tracking_number = request.GET.get('tracking_number')
+    shipment = None
+    client = None
+
+    if tracking_number:
+        shipment = Shipment.objects.filter(tracking_number=tracking_number).first()
+        if shipment and shipment.client_id:
+            client = Client.objects.filter(id=shipment.client_id).first()
+
+    return render(request, 'dash/shipment_tracker.html', {'shipment': shipment, 'client': client, 'tracking_number': tracking_number})
 
 
 def track_shipment(request):

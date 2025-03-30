@@ -17,6 +17,7 @@ class Invoice(models.Model):
         return f"Invoice {self.invoice_number} - {self.client.name}"
 
 
+
 class Shipment(models.Model):
     SHIPMENT_TYPE_CHOICES = [
         ('air', 'Air'),
@@ -42,7 +43,10 @@ class Shipment(models.Model):
     volume = models.FloatField()
     origin = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
-    estimated_delivery = models.DateField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    estimated_delivery_date = models.DateField(blank=True, null=True)
+    shipment_cost = models.FloatField(default=0.0, blank=True, null=True)
     status = models.CharField(max_length=200,)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

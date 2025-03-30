@@ -65,7 +65,7 @@
                             </tr>
                             <tr class="table-secondary">
                                 <th colspan="4">Shipper</th>
-                                <!--<th colspan="2">Receiver</th>-->
+                                <th colspan="2">Receiver</th>
                             </tr>
                             {% if client %}
                             <tr>
@@ -75,12 +75,11 @@
                                     {{ client.phone }}<br>
                                     {{ client.address }}
                                 </td>
-                                <!--<td colspan="2">
-                                    <strong>{{ shipment.receiver_name }}</strong><br>
-                                    {{ shipment.receiver_email }}<br>
-                                    {{ shipment.receiver_phone }}<br>
-                                    {{ shipment.receiver_address }}
-                                </td> -->
+                                <td colspan="2">
+                                    <strong>{{ shipment.receiver_name || 'N/A' }}</strong><br>
+                                    {{ shipment.city }}<br>
+                                    {{ shipment.address }}<br>
+                                </td>
                             </tr>
                             {% endif %}
                         </tbody>

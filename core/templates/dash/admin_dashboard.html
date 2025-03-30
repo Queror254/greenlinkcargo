@@ -194,7 +194,7 @@
                                 <th>Origin</th>
                                 <th>Destination</th>
                                 <th>Status</th>
-                                <th>Rate</th>
+                                <th>Shipment Cost</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -208,7 +208,7 @@
                                 <td>{{ shipment.origin }}</td>
                                 <td>{{ shipment.destination }}</td>
                                 <td>{{ shipment.status }}</td>
-                                <td>${{ shipment.calculate_rate }}</td>
+                                <td>Ksh{{ shipment.shipment_cost }}</td>
                                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
