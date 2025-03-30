@@ -32,8 +32,8 @@
                 <!--begin::Small Box Widget 1-->
                 <div class="small-box text-bg-primary">
                     <div class="inner">
-                        <h3>150</h3>
-                        <p>New Orders</p>
+                        <h3>{{ total_shipments }}</h3>
+                        <p>Shipments</p>
                     </div>
                     <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -41,7 +41,7 @@
                             d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z">
                         </path>
                     </svg>
-                    <a href="#"
+                    <a href="{% url 'getall_shipment' %}"
                         class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                         More info <i class="bi bi-link-45deg"></i>
                     </a>
@@ -74,8 +74,8 @@
                 <!--begin::Small Box Widget 3-->
                 <div class="small-box text-bg-warning">
                     <div class="inner">
-                        <h3>44</h3>
-                        <p>User Registrations</p>
+                        <h3>{{ total_clients }}</h3>
+                        <p>Clients</p>
                     </div>
                     <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -83,7 +83,7 @@
                             d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z">
                         </path>
                     </svg>
-                    <a href="#"
+                    <a href="{% url 'client_list' %}"
                         class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
                         More info <i class="bi bi-link-45deg"></i>
                     </a>
@@ -136,7 +136,7 @@
             <div class="col-lg-5 connectedSortable">
                 <div class="card text-white bg-primary bg-gradient border-primary mb-4">
                     <div class="card-header border-0">
-                        <h3 class="card-title">Sales Value</h3>
+                        <h3 class="card-title">Active Routes</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-primary btn-sm" data-lte-toggle="card-collapse">
                                 <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
@@ -211,12 +211,28 @@
                                 <td>${{ shipment.calculate_rate }}</td>
                                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <a href="{% url 'shipment_detail' shipment.id %}"
-                                        class="btn btn-sm btn-info">View</a>
-                                    {% if user.role == "admin" or user.role == "staff" %}
-                                    <a href="{% url 'update_shipment' shipment.id %}"
-                                        class="btn btn-sm btn-warning">Edit</a>
-                                    {% endif %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if user.role == "admin" or user.role == "staff" %}
+                                        <!-- Admin/Staff Actions -->
+                                        <div class="d-flex flex-column gap-1">
+                                            <!-- View Button -->
+                                            <a href="{% url 'shipment_detail' shipment.id %}"
+                                                class="btn btn-sm btn-outline-info">View</a>
+                                            <a href="{% url 'update_shipment' shipment.id %}"
+                                                class="btn btn-sm btn-outline-warning">Edit</a>
+                                        </div>
+
+                                        <div class="d-flex flex-column gap-1">
+                                            <!-- Delete Button -->
+                                            <a href="{% url 'delete_shipment' shipment.id %}"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Are you sure?');">Delete</a>
+                                            <!-- Invoice Button -->
+                                            <a href="{% url 'generate_invoice' shipment.id %}"
+                                                class="btn btn-sm btn-outline-success">Invoice</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
@@ -230,6 +246,62 @@
                 <!-- /.card-body -->
 
             </div>
+            <!-- Clients Table -->
+            <div class="card direct-chat direct-chat-primary mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">All Clients</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>City</th>
+                                <th>Postal Code</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                            <tr>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.email }}</td>
+                                <td>{{ client.phone }}</td>
+                                <td>{{ client.address|default:"N/A" }}</td>
+                                <td>{{ client.city|default:"N/A" }}</td>
+                                <td>{{ client.postalcode|default:"N/A" }}</td>
+                                <td>
+                                    <a href="{% url 'client_detail' client.id %}" class="btn btn-sm btn-info">View</a>
+                                    {% if user.is_staff %}
+                                    <a href="{% url 'update_client' client.id %}"
+                                        class="btn btn-sm btn-warning">Edit</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No clients found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
         </div>
         <!-- /.row (main row) -->
     </div>

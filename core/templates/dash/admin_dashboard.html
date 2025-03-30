@@ -211,12 +211,28 @@
                                 <td>${{ shipment.calculate_rate }}</td>
                                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <a href="{% url 'shipment_detail' shipment.id %}"
-                                        class="btn btn-sm btn-info">View</a>
-                                    {% if user.role == "admin" or user.role == "staff" %}
-                                    <a href="{% url 'update_shipment' shipment.id %}"
-                                        class="btn btn-sm btn-warning">Edit</a>
-                                    {% endif %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if user.role == "admin" or user.role == "staff" %}
+                                        <!-- Admin/Staff Actions -->
+                                        <div class="d-flex flex-column gap-1">
+                                            <!-- View Button -->
+                                            <a href="{% url 'shipment_detail' shipment.id %}"
+                                                class="btn btn-sm btn-outline-info">View</a>
+                                            <a href="{% url 'update_shipment' shipment.id %}"
+                                                class="btn btn-sm btn-outline-warning">Edit</a>
+                                        </div>
+
+                                        <div class="d-flex flex-column gap-1">
+                                            <!-- Delete Button -->
+                                            <a href="{% url 'delete_shipment' shipment.id %}"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Are you sure?');">Delete</a>
+                                            <!-- Invoice Button -->
+                                            <a href="{% url 'generate_invoice' shipment.id %}"
+                                                class="btn btn-sm btn-outline-success">Invoice</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}

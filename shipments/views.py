@@ -7,8 +7,6 @@ from django.utils.crypto import get_random_string
 from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from xhtml2pdf import pisa
-from weasyprint import HTML
-
 
 @login_required
 def getall_shipment(request):
@@ -144,6 +142,12 @@ def update_shipment(request, shipment_id):
         
 
     return render(request, 'shipments/update_shipment.html', {'shipment': shipment})
+
+@login_required
+def delete_shipment(request, shipment_id):
+    shipment = get_object_or_404(Shipment, id=shipment_id)
+    shipment.delete()
+    return redirect('getall_shipment')
 
 
 def track_shipment(request):
