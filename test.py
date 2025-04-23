@@ -10,12 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
-from decouple import config
-
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,15 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v5lal&ljhar3u0$%@6jt=p2qy^rir$s+!hlb&fyckc3ukqv&ai'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = False
 
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = ['techmystique.pythonanywhere.com']
+ALLOWED_HOSTS = ['techmystique.pythonanywhere.com']
 
-
-# Application definition   
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,15 +36,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.messages',
-    
+
     # Third-party
     'rest_framework',
-    'rest_framework_simplejwt',
-    
+    #'rest_framework_simplejwt',
     #'corsheaders',
-    
+
     # local apps
-    
+
     #manage user roles and auth
     'users',
     #manage clients
@@ -63,7 +52,6 @@ INSTALLED_APPS = [
     'shipments',
     #handles payments, accounting, reporting
     'finance',
-    'setting_app'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -76,7 +64,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
      # Enable CORS
-    #'corsheaders.middleware.CorsMiddleware', 
+    'corsheaders.middleware.CorsMiddleware',
     # default
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -114,28 +102,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-#if DEBUG=True then
-if DEBUG:
-#DEBUG=True then
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
-else :
-#DEBUG=False then    
-   DATABASES = {
+# postgresql://root:eddR6lYJKnK045NLYH39IHoMPed935Pi@dpg-cvkk4dqdbo4c73f7npfg-a.oregon-postgres.render.com/db_greenlink_cargo
+#
+
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'techmystique$greenlink',
@@ -144,10 +116,6 @@ else :
         'HOST': 'techmystique.mysql.pythonanywhere-services.com',
     }
 }
-
-
-
-
 
 
 # Password validation
@@ -184,9 +152,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Your additional static dirs
 
 
 # Default primary key field type

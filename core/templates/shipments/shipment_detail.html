@@ -28,8 +28,12 @@
             </tr>
             {% endif %}
             <tr>
-                <th>Weight</th>
-                <td>{{ shipment.weight }} kg</td>
+            <tr>
+                <th>Status</th>
+                <td>{{ shipment.status }}</td>
+            </tr>
+            <th>Weight</th>
+            <td>{{ shipment.weight }} kg</td>
             </tr>
             <tr>
                 <th>CBM</th>
@@ -44,8 +48,12 @@
                 <td>{{ shipment.destination }}</td>
             </tr>
             <tr>
-                <th>Status</th>
-                <td>{{ shipment.status }}</td>
+                <th>City</th>
+                <td>{{ shipment.city }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ shipment.address }}</td>
             </tr>
             <tr>
                 <th>Shipment Cost</th>

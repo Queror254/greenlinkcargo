@@ -56,19 +56,20 @@
                             <td>{{ shipment.created_at }}</td>
                         </tr>
                         <tr class="table-secondary">
-                            <th colspan="4">Shipper</th>
+                            <th colspan="2">Shipper</th>
                             <th colspan="2">Receiver</th>
                         </tr>
                         {% if client %}
                         <tr>
-                            <td colspan="4">
+                            <td colspan="2">
                                 <strong>{{ shipment.name }}</strong><br>
                                 {{ client.email }}<br>
                                 {{ client.phone }}<br>
                                 {{ client.address }}
                             </td>
                             <td colspan="2">
-                                <strong>{{ shipment.receiver_name || 'N/A' }}</strong><br>
+                                <strong>{{ shipment.receiver_name|default:"N/A" }}
+                                </strong><br>
                                 {{ shipment.city }}<br>
                                 {{ shipment.address }}<br>
                             </td>

@@ -139,7 +139,7 @@ def shipment_detail(request, shipment_id):
     client = get_object_or_404(Client, id=shipment.client_id)
 
 
-    # Ensure only the client who created the shipment or an admin/staff can view it
+    # Ensure only the client who created the shipment or an admin/staff can v---iew it
     if request.user != shipment.client and request.user.role not in ['admin', 'staff']:
         return render(request, '403.html', {'error': 'You are not authorized to view this shipment'})
 

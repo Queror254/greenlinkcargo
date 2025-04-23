@@ -11,6 +11,13 @@
 </head>
 
 <body class="bg-light d-flex justify-content-center align-items-center min-vh-100">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-light bg-white shadow-sm w-100 position-absolute top-0">
+        <div class="container d-flex justify-content-between">
+            <a class="navbar-brand fw-bold" href="/">Shipment Tracker</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary">Login</a>
+        </div>
+    </nav>
 
     <div class="container">
         <div class="row justify-content-center">
@@ -76,7 +83,8 @@
                                     {{ client.address }}
                                 </td>
                                 <td colspan="2">
-                                    <strong>{{ shipment.receiver_name || 'N/A' }}</strong><br>
+                                    <strong>{{ shipment.receiver_name|default:"N/A" }}
+                                    </strong><br>
                                     {{ shipment.city }}<br>
                                     {{ shipment.address }}<br>
                                 </td>
