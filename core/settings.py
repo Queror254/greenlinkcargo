@@ -11,11 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from decouple import config
-
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,7 +44,7 @@ INSTALLED_APPS = [
     
     # Third-party
     'rest_framework',
-    'rest_framework_simplejwt',
+    #'rest_framework_simplejwt',
     
     #'corsheaders',
     

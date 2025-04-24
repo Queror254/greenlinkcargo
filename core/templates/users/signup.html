@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Registration</title>
+    <title>Register Business | Shipsyst</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -22,7 +22,8 @@
         }
 
         .container-fluid {
-            padding: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
         }
 
         /* Progress bar and form steps */
@@ -139,13 +140,75 @@
         .action-button-previous:focus {
             background-color: #000;
         }
+
+        /* Improved Hero Section Styles */
+        .hero-section {
+            padding: 2rem 1rem !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+        }
+
+        .hero-heading {
+            font-size: 2rem !important;
+            line-height: 1.2 !important;
+            margin-bottom: 1.5rem !important;
+            font-weight: 700 !important;
+        }
+
+        .hero-img {
+            max-width: 100% !important;
+            height: auto !important;
+            margin-top: 2rem !important;
+            object-fit: contain !important;
+        }
+
+        @media (min-width: 768px) {
+            .hero-heading {
+                font-size: 3rem !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-section {
+                text-align: center !important;
+                padding-bottom: 0 !important;
+            }
+
+            .hero-heading br {
+                display: none !important;
+            }
+        }
+
+        /* Remove problematic row width constraint */
+        .row {
+            width: auto !important;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-8">
+            <!-- Hero Column -->
+            <div class="col-12 col-md-6 col-lg-5 order-md-1">
+                <div class="hero-section p-4">
+                    <h5 class="text-primary mb-4">Welcome to Shipsyst</h5>
+                    <h1 class="hero-heading">
+                        SHIPMENT MANAGEMENT SYSTEM
+                    </h1>
+                    <img src="/static/images/shipsyst.png" alt="hero img" class="hero-img">
+                    <h6>Manage your shipments efficiently</h6>
+                </div>
+            </div>
+            <div class="col-12 col-md-8 col-lg-6 order-md-2"
+                style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="d-flex justify-content-end align-items-center text-center gap-4">
+                    <h6 class="mb-0">Already have an account? <a href="{% url 'login' %}">Sign In</a></h6>
+                </div>
                 <div class="card p-4 mt-3 mb-3">
                     <h2 id="heading" class="text-center">Business Registration</h2>
                     <!-- Hidden CSRF token (Django) -->
@@ -163,7 +226,6 @@
                         </div>
                         <!-- Fieldset 1: Business Details -->
                         <fieldset>
-                            <legend>Business Details:</legend>
                             <div class="form-row">
                                 <div class="form-group col-md-12">
                                     <label for="name">Business Name: *</label>
@@ -280,7 +342,6 @@
 
                         <!-- Fieldset 2: Business Settings -->
                         <fieldset>
-                            <legend>Business Settings:</legend>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label for="tax_label_1">Tax 1 Name:</label>
@@ -337,7 +398,6 @@
 
                         <!-- Fieldset 3: Owner Information -->
                         <fieldset>
-                            <legend>Owner Information:</legend>
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                     <label for="surname">Prefix:</label>

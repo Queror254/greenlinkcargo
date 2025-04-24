@@ -1,62 +1,220 @@
-{% extends 'users/auth_base.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Login | Greenlink Cargo{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Shipsyst</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        /* General reset and container styling */
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-{% block content %}
+        body,
+        html {
+            height: 100%;
+        }
 
-<section class="ftco-section">
-    <div class="container">
-        <div class="d-flex justify-content-center align-items-center p-2 login_form h-100 w-100">
-            <!-- Form container-->
-            <div class="p-4 login-wrap">
-                <div class="d-flex">
-                    <div class="w-100">
-                        <h3 class="mb-4">Sign In</h3>
-                    </div>
-                    <div class="w-100">
-                        <p class="social-media d-flex justify-content-end">
-                            <a href="#" class="social-icon d-flex align-items-center justify-content-center"><span
-                                    class="fa fa-facebook"></span></a>
-                            <a href="#" class="social-icon d-flex align-items-center justify-content-center"><span
-                                    class="fa fa-twitter"></span></a>
-                        </p>
-                    </div>
+        .container-fluid {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        /* Progress bar and form steps */
+        #msform {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        #msform fieldset {
+            background: #fff;
+            border: 0;
+            border-radius: 0.5rem;
+            width: 100%;
+            margin: 0;
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        #msform fieldset:not(:first-of-type) {
+            display: none;
+        }
+
+        .fs-title {
+            font-size: 25px;
+            color: #673AB7;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .fieldlabels {
+            color: gray;
+            text-align: left;
+        }
+
+        .label {
+            display: inline-block !important;
+            text-align: start !important;
+        }
+
+        /* Action buttons */
+        .action-button {
+            width: 100px;
+            background: #673AB7;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 5px;
+        }
+
+        .action-button:hover,
+        .action-button:focus {
+            background-color: #311B92;
+        }
+
+        .action-button-previous {
+            width: 100px;
+            background: #616161;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 5px;
+        }
+
+        .action-button-previous:hover,
+        .action-button-previous:focus {
+            background-color: #000;
+        }
+
+        /* Improved Hero Section Styles */
+        .hero-section {
+            padding: 2rem 1rem !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+        }
+
+        .hero-heading {
+            font-size: 2rem !important;
+            line-height: 1.2 !important;
+            margin-bottom: 1.5rem !important;
+            font-weight: 700 !important;
+        }
+
+        .hero-img {
+            max-width: 100% !important;
+            height: auto !important;
+            margin-top: 2rem !important;
+            object-fit: contain !important;
+        }
+
+        @media (min-width: 768px) {
+            .hero-heading {
+                font-size: 3rem !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-section {
+                text-align: center !important;
+                padding-bottom: 0 !important;
+            }
+
+            .hero-heading br {
+                display: none !important;
+            }
+        }
+
+        /* Remove problematic row width constraint */
+        .row {
+            width: auto !important;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <!-- Hero Column -->
+            <div class="col-12 col-md-6 col-lg-5 order-md-1">
+                <div class="hero-section p-4">
+                    <h5 class="text-primary mb-4">Welcome to Shipsyst</h5>
+                    <h1 class="hero-heading">
+                        SHIPMENT MANAGEMENT SYSTEM
+                    </h1>
+                    <img src="/static/images/shipsyst.png" alt="hero img" class="hero-img">
+                    <h6>Manage your shipments efficiently</h6>
                 </div>
-                <form method="post" class="signin-form">
-                    {% csrf_token %}
-                    <div class="form-group mb-3">
-                        <label class="label" for="name">Username</label>
-                        <input type="text" class="form-control" name="username" placeholder="Username" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label class="label" for="password">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Password" required
-                            required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">Sign
-                            In</button>
-                    </div>
-                    <div class="form-group d-md-flex">
-                        <div class="w-50 text-left">
-                            <label class="checkbox-wrap checkbox-primary mb-0">Remember Me
-                                <input type="checkbox" checked>
-                                <span class="checkmark"></span>
-                            </label>
+            </div>
+            <div class="col-12 col-md-8 col-lg-6 order-md-2"
+                style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="d-flex justify-content-end align-items-center text-center gap-4">
+                    <h6 class="mb-0">Don't have an account? <a href="{% url 'register' %}">Register Now</a></h6>
+                </div>
+                <div class="p-4 mt-3 mb-3">
+                    <!--<h3 id="heading" class="text-start">Login</h3>-->
+                    <!-- Hidden CSRF token (Django) -->
+                    <form method="post" enctype="multipart/form-data" id="msform">
+                        {% csrf_token %}
+                        <!-- : Owner Login Information -->
+                        <div class="form-group">
+                            <label class="label text-start" for="username">Username: *</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text"><i
+                                            class="fa fa-user"></i></span></div>
+                                <input type="text" class="form-control" name="username" id="username"
+                                    placeholder="username" required>
+                            </div>
                         </div>
-                        <div class="w-50 text-md-right">
-                            <a href="#">Forgot Password</a>
+                        <div class="form-group">
+                            <label class="label" for="password">Password:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text"><i
+                                            class="fa fa-lock"></i></span></div>
+                                <input type="text" class="form-control" name="password" id="password"
+                                    placeholder="password">
+                            </div>
                         </div>
-                    </div>
-                </form>
-                <p class="text-center">Not a member? <a href="{% url 'register' %}">Sign Up</a></p>
-                {% if error %}
-                <p style="color:red;">{{ error }}</p>
-                {% endif %}
+                        <div class="form-group">
+                            <button type="submit"
+                                class="form-control btn btn-primary rounded submit px-3">Login</button>
+                        </div>
+                        <div class="form-group d-md-flex">
+                            <div class="w-50 text-left">
+                                <label class="checkbox-wrap checkbox-primary mb-0">Remember Me
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="w-50 text-md-right">
+                                <a href="#">Forgot Password</a>
+                            </div>
+                        </div>
+                    </form>
+                    <p class="text-start">Not a member? <a href="{% url 'register' %}">Sign Up</a></p>
+                    {% if error %}
+                    <p style="color:red;">{{ error }}</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
+    </div>
 
-    </div>
-    </div>
-</section>
-{% endblock %}
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
