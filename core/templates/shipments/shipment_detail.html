@@ -28,12 +28,12 @@
             </tr>
             {% endif %}
             <tr>
-            <tr>
                 <th>Status</th>
                 <td>{{ shipment.status }}</td>
             </tr>
-            <th>Weight</th>
-            <td>{{ shipment.weight }} kg</td>
+            <tr>
+                <th>Weight</th>
+                <td>{{ shipment.weight }} kg</td>
             </tr>
             <tr>
                 <th>CBM</th>
@@ -42,6 +42,14 @@
             <tr>
                 <th>Origin</th>
                 <td>{{ shipment.origin }}</td>
+            </tr>
+            <tr>
+                <th>Recepient Name</th>
+                <td>{{ shipment.recepient_name }}</td>
+            </tr>
+            <tr>
+                <th>Recepient Phone</th>
+                <td>{{ shipment.recepient_phone }}</td>
             </tr>
             <tr>
                 <th>Destination</th>
@@ -57,7 +65,11 @@
             </tr>
             <tr>
                 <th>Shipment Cost</th>
-                <td>Ksh{{ shipment.shipment_cost }}</td>
+                <td>KES{{ shipment.shipment_cost }}</td>
+            </tr>
+            <tr>
+                <th>Complete</th>
+                <td>{{ shipment.shipment_complete }}</td>
             </tr>
             <tr>
                 <th>Created At</th>

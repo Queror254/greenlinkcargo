@@ -13,9 +13,12 @@
                 <th>Client</th>
                 <th>Shipment Type</th>
                 <th>Origin</th>
+                <th>Recepient Name</th>
+                <th>Recepient Phone</th>
                 <th>Destination</th>
                 <th>Status</th>
                 <th>Shipment Cost</th>
+                <th>Complte</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
@@ -28,8 +31,11 @@
                 <td>{{ shipment.get_shipment_type_display }}</td>
                 <td>{{ shipment.origin }}</td>
                 <td>{{ shipment.destination }}</td>
+                <td>{{ shipment.recepient_name }}</td>
+                <td>{{ shipment.recepient_phone }}</td>
                 <td>{{ shipment.status }}</td>
-                <td>Ksh{{ shipment.shipment_cost }}</td>
+                <td>KES{{ shipment.shipment_cost }}</td>
+                <td>{{ shipment.shipment_complete }}</td>
                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                 <td>
                     <div class="d-flex align-items-center gap-2">
