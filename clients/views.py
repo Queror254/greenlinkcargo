@@ -1,11 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Client
+from users.models import Business, Branch
 
 def client_list(request):
     clients = Client.objects.all()  # Fetch all clients
     return render(request, 'clients/client_list.html', {'clients': clients})
 
 def create_client(request):
+    user = request.user
+    if user.role == 'admin':
+        branch=None
+        business = get_object_or_404(Business, owner=user)
+    else:
+        branch = user.branch 
+        business = branch.business 
+        
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
@@ -15,8 +24,10 @@ def create_client(request):
         postalcode = request.POST.get('postalcode')
 
         Client.objects.create(
-            name=name, email=email, phone=phone,
-            address=address, city=city, postalcode=postalcode
+            name=name, 
+            email=email, 
+            phone=phone,
+            address=address, city=city, postalcode=postalcode, branch=branch, business=business
         )
         return redirect('client_list')  # Redirect after successful creation
 
