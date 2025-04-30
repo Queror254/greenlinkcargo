@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Staff{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-12 order-md-2"
+            style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+            <div class="card p-4 mt-3 mb-3">
+                <h2 id="heading" class="text-center">Update Employee</h2>
+                <form method="post" enctype="multipart/form-data" id="msform">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="first_name">First Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-user"></i></span></div>
+                                    <input type="text" class="form-control" name="first_name" id="first_name"
+                                        placeholder="First Name" value="{{ staff.first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="last_name">Last Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-user"></i></span></div>
+                                    <input type="text" class="form-control" name="last_name" id="last_name"
+                                        placeholder="Last Name" value="{{ staff.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="email">Email: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-envelope"></i></span></div>
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email"
+                                        value="{{ staff.email }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="branch_id">Branch: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fas fa-suitcase"></i></span>
+                                    </div>
+                                    <select class="form-control" name="branch_id" id="branch_id" required>
+                                        <option value="{{ staff.branch.id }}" disabled selected>{{ staff.branch.name }}
+                                        </option>
+                                        {% for branch in branch %}
+                                        <option value="{{ branch.id }}">
+                                            {{ branch.name }}
+                                        </option>
+                                        {% empty %}
+                                        <option value="" disabled>No branches available</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="submit" name="next" class="next action-button" value="Update">
+                    </fieldset>
+                </form>
+                {% if error %}
+                <p style="color:red;">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

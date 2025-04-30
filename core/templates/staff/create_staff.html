@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create-Branch{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-12 order-md-2"
+            style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+            <div class="card p-4 mt-3 mb-3">
+                <h2 id="heading" class="text-center">Add New Employee</h2>
+                <!-- Hidden CSRF token (Django) -->
+                <form method="post" enctype="multipart/form-data" id="msform">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name">First Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-user"></i></span></div>
+                                    <input type="text" class="form-control" name="first_name" id="first_name"
+                                        placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="name">Last Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-user"></i></span></div>
+                                    <input type="text" class="form-control" name="last_name" id="last_name"
+                                        placeholder="Last Name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="mobile">Email: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-envelope"></i></span></div>
+                                    <input type="text" class="form-control" name="email" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="currency_id">Branch: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fas fa-suitcase"></i></span>
+                                    </div>
+                                    <select class="form-control" name="branch_id" id="branch_id" required>
+                                        <option value="" disabled selected>Select Branch</option>
+                                        {% for branch in branch %}
+                                        <option value="{{ branch.id }}">{{ branch.name }}</option>
+                                        {% empty %}
+                                        <option value="" disabled>No branches available</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name">Password: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-lock"></i></span></div>
+                                    <input type="text" class="form-control" name="password" id="password"
+                                        placeholder="password" required>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="name">Confirm Password: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-lock"></i></span></div>
+                                    <input type="text" class="form-control" name="confirm_password"
+                                        id="confirm_password" placeholder="Confirm Password" required>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="submit" name="next" class="next action-button" value="Submit">
+                    </fieldset>
+                </form>
+                {% if error %}
+                <p style="color:red;">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

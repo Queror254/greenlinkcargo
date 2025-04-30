@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-12 order-md-2"
+            style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+            <div class="card p-4 mt-3 mb-3">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Hidden CSRF token (Django) -->
+                <form method="post" enctype="multipart/form-data" id="msform">
+                    {% csrf_token %}
+                    <!-- Fieldset 1: Business Details -->
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="name">Business Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-suitcase"></i></span></div>
+                                    <input type="text" class="form-control" name="business_name" id="business_name"
+                                        placeholder="Business Name" value="{{ business.name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="start_date">Start Date:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-calendar"></i></span></div>
+                                    <input type="date" class="form-control" name="start_date" id="start_date"
+                                        placeholder="Start Date"
+                                        value="{{ business.start_date|date:'Y-m-d'|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="currency_id">Currency: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-money-bill-alt"></i></span>
+                                    </div>
+                                    <select class="form-control" name="currency_id" id="currency_id" required>
+                                        <option value="" disabled>Select Currency</option>
+                                        <option value="1">Kenya - KSH</option>
+                                        <option value="2">USA - USD</option>
+                                        <option value="6">Australia - AUD</option>
+                                        <option value="23">Cayman - KYD</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="business_logo">Upload Logo:</label>
+                    <input type="file" class="form-control-file" name="business_logo" id="business_logo"
+                        accept="image/*">
+                    {% if business.business_logo %}
+                    <small>Current logo: <a href="{{ business.business_logo.url }}" target="_blank">View</a></small>
+                    {% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="website">Website:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text"><i
+                                    class="fa fa-globe"></i></span></div>
+                        <input type="text" class="form-control" name="website" id="website" placeholder="Website"
+                            value="{{ business.website|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="mobile">Business Contact Number:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text"><i
+                                    class="fa fa-phone"></i></span></div>
+                        <input type="text" class="form-control" name="mobile" id="mobile"
+                            placeholder="Business contact number" value="{{ business.mobile|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="alternate_number">Alternate Contact Number:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text"><i
+                                    class="fa fa-phone"></i></span></div>
+                        <input type="text" class="form-control" name="alternate_number" id="alternate_number"
+                            placeholder="Alternate contact number" value="{{ business.alternate_number|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="country">Country: *</label>
+                    <input type="text" class="form-control" name="country" id="country" placeholder="Country"
+                        value="{{ business.country|default:'' }}" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="state">State: *</label>
+                    <input type="text" class="form-control" name="state" id="state" placeholder="State"
+                        value="{{ business.state|default:'' }}" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="city">City: *</label>
+                    <input type="text" class="form-control" name="city" id="city" placeholder="City"
+                        value="{{ business.city|default:'' }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="zip_code">Zip Code: *</label>
+                    <input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Zip/Postal Code"
+                        value="{{ business.zip_code|default:'' }}" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="landmark">Landmark: *</label>
+                    <input type="text" class="form-control" name="landmark" id="landmark" placeholder="Landmark"
+                        value="{{ business.landmark|default:'' }}" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="time_zone">Time zone: *</label>
+                    <select class="form-control" name="time_zone" id="time_zone" required>
+                        <option value="">Select Time zone</option>
+                        <option value="Africa/Nairobi">Africa/Nairobi</option>
+                        <option value="Asia/Kolkata">Asia/Kolkata</option>
+                        <!-- Add additional time zone options as needed -->
+                    </select>
+                </div>
+            </div>
+            </fieldset>
+
+            <!-- Fieldset 2: Business Settings -->
+            <fieldset>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tax_label_1">Tax 1 Name:</label>
+                        <input type="text" class="form-control" name="tax_label_1" id="tax_label_1"
+                            placeholder="GST / VAT / Other" value="{{ business.tax_label_1|default:'' }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="tax_number_1">Tax 1 No.:</label>
+                        <input type="text" class="form-control" name="tax_number_1" id="tax_number_1"
+                            value="{{ business.tax_number_1|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tax_label_2">Tax 2 Name:</label>
+                        <input type="text" class="form-control" name="tax_label_2" id="tax_label_2"
+                            placeholder="GST / VAT / Other" value="{{ business.tax_label_2|default:'' }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="tax_number_2">Tax 2 No.:</label>
+                        <input type="text" class="form-control" name="tax_number_2" id="tax_number_2"
+                            value="{{ business.tax_number_2|default:'' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="fy_start_month">Financial Year Start Month: *</label>
+                        <select class="form-control" name="fy_start_month" id="fy_start_month" required>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="accounting_method">Stock Accounting Method: *</label>
+                        <select class="form-control" name="accounting_method" id="accounting_method" required>
+                            <option value="fifo">FIFO (First In First Out)</option>
+                            <option value="lifo">LIFO (Last In First Out)</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Fieldset 3: Owner Information -->
+            <fieldset>
+                <h3 id="heading" class="text-center">Owner</h3>
+
+                <div class="form-row">
+                    <!-- <div class="form-group col-md-4">
+                        <label for="surname">Prefix:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-info"></i></span></div>
+                            <input type="text" class="form-control" name="surname" id="surname"
+                                placeholder="Mr / Mrs / Miss" value="{{ user.surname|default:'' }}">
+                        </div>
+                    </div>-->
+                    <div class="form-group col-md-6">
+                        <label for="first_name">First Name: *</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-info"></i></span></div>
+                            <input type="text" class="form-control" name="first_name" id="first_name"
+                                placeholder="First Name" value="{{ user.first_name|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="last_name">Last Name:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-info"></i></span></div>
+                            <input type="text" class="form-control" name="last_name" id="last_name"
+                                placeholder="Last Name" value="{{ user.last_name|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="username">Username: *</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-user"></i></span></div>
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username"
+                                value="{{ user.username|default:'' }}" required readonly>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">Email: *</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-envelope"></i></span></div>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Email"
+                                value="{{ user.email|default:'' }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="password">Password: (Leave blank to keep current)</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-lock"></i></span></div>
+                            <input type="password" class="form-control" name="password" id="password"
+                                placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="confirm_password">Confirm Password:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text"><i
+                                        class="fa fa-lock"></i></span></div>
+                            <input type="password" class="form-control" name="confirm_password" id="confirm_password"
+                                placeholder="Confirm Password">
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" name="submit" class="action-button" value="Update Profile">
+            </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the current currency_id from Django's template variable
+        const currencyId = "{{ business.currency_id }}";  // Rendered server-side
+
+        // Set the selected option
+        if (currencyId) {
+            const selectElement = document.getElementById('currency_id');
+            selectElement.value = currencyId;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the current time zone from Django's template variable
+        const timeZone = "{{ business.time_zone|default:'' }}";
+
+        // Set the selected option
+        if (timeZone) {
+            const selectElement = document.getElementById('time_zone');
+            selectElement.value = timeZone;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the current value from Django template
+        const fyStartMonth = "{{ business.fy_start_month|default:'1' }}";  // Just the default value
+
+        // Set the selected option
+        if (fyStartMonth) {
+            const selectElement = document.getElementById('fy_start_month');
+            selectElement.value = fyStartMonth;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the current method from Django template
+        const accountingMethod = "{{ business.accounting_method|default:'fifo' }}"; // Default to FIFO
+
+        // Set the selected option
+        if (accountingMethod) {
+            const selectElement = document.getElementById('accounting_method');
+            selectElement.value = accountingMethod;
+        }
+    });
+</script>
+{% endblock %}

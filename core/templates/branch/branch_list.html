@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Branches{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All branches</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Zip Code</th>
+                <th>Landmark</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for branch in branches %}
+            <tr>
+                <td>{{ branch.id }}</td>
+                <td>{{ branch.name }}</td>
+                <td>{{branch.mobile}}</td>
+                <td>{{ branch.country }}</td>
+                <td>{{ branch.state }}</td>
+                <td>{{ branch.city }}</td>
+                <td>{{ branch.zip_code }}</td>
+                <td>{{ branch.landmark }}</td>
+                <td>{{ branch.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        {% if user.role == "admin" or user.role == "staff" %}
+                        <!-- Admin/Staff Actions -->
+                        <div class="d-flex flex-column gap-1">
+                            <!-- View Button -->
+                            <a href="{% url 'update_branch' branch.id%}" class="btn btn-sm btn-outline-info">Edit</a>
+                        </div>
+
+                        {% endif %}
+                    </div>
+                </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">No branchs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

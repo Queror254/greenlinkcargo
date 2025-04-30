@@ -133,10 +133,10 @@ else :
    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'techmystique$greenlink',
-        'USER': 'techmystique',
-        'PASSWORD': 'greenlink5472',
-        'HOST': 'techmystique.mysql.pythonanywhere-services.com',
+        'NAME': 'xxxxxx$xxxxx',
+        'USER': 'xxxxxxx',
+        'PASSWORD': 'xxxxxx',
+        'HOST': 'xxxxxxx.mysql.pythonanywhere-services.com',
     }
 }
 

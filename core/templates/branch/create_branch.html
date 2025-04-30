@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create-Branch{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-12 order-md-2"
+            style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+            <div class="card p-4 mt-3 mb-3">
+                <h2 id="heading" class="text-center">Branch Registration</h2>
+                <!-- Hidden CSRF token (Django) -->
+                <form method="post" enctype="multipart/form-data" id="msform">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name">Business Name: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-suitcase"></i></span></div>
+                                    <input type="text" class="form-control" name="branch_name" id="branch_name"
+                                        placeholder="Branch Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="currency_id">Currency: *</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fas fa-money-bill-alt"></i></span></div>
+                                    <select class="form-control" name="currency_id" id="currency_id" required>
+                                        <option value="" disabled selected>Select Currency</option>
+                                        <!-- Example options; replace with dynamic currency list if necessary -->
+                                        <option value="1">Kenya - Kenyan Shillings(KSH)</option>
+                                        <option value="2">America - Dollars(USD)</option>
+                                        <option value="6">Australia - Dollars(AUD)</option>
+                                        <option value="23">Cayman Islands - Dollars(KYD)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="mobile">Business Contact Number:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-phone"></i></span></div>
+                                    <input type="text" class="form-control" name="mobile" id="mobile"
+                                        placeholder="Business contact number">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="alternate_number">Alternate Contact Number:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend"><span class="input-group-text"><i
+                                                class="fa fa-phone"></i></span></div>
+                                    <input type="text" class="form-control" name="alternate_number"
+                                        id="alternate_number" placeholder="Alternate contact number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="country">Country: *</label>
+                                <input type="text" class="form-control" name="country" id="country"
+                                    placeholder="Country" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="state">State: *</label>
+                                <input type="text" class="form-control" name="state" id="state" placeholder="State"
+                                    required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="city">City: *</label>
+                                <input type="text" class="form-control" name="city" id="city" placeholder="City"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="zip_code">Zip Code: *</label>
+                                <input type="text" class="form-control" name="zip_code" id="zip_code"
+                                    placeholder="Zip/Postal Code" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="landmark">Landmark: *</label>
+                                <input type="text" class="form-control" name="landmark" id="landmark"
+                                    placeholder="Landmark" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="time_zone">Time zone: *</label>
+                                <select class="form-control" name="time_zone" id="time_zone" required>
+                                    <option value="">Time zone</option>
+                                    <option value="Asia/Kolkata" selected>Africa/Nairobi</option>
+                                    <option value="Asia/Kolkata" selected>Asia/Kolkata</option>
+                                    <!-- Add additional time zone options as needed -->
+                                </select>
+                            </div>
+                        </div>
+                        <input type="submit" name="next" class="next action-button" value="Submit">
+                    </fieldset>
+                </form>
+                {% if error %}
+                <p style="color:red;">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
