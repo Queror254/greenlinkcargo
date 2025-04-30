@@ -1,11 +1,13 @@
 # shipments/models.py
 from django.db import models
 from clients.models import Client  # Import the Client model
+from users.models import Business
 import uuid
 from datetime import datetime
 from django.utils.timezone import now
 
 class Invoice(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     invoice_number = models.CharField(max_length=20, unique=True, blank=True)
     shipment = models.OneToOneField('Shipment', on_delete=models.CASCADE)  
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -31,6 +33,8 @@ class Shipment(models.Model):
         ('ready_for_pickup', 'Ready for Pickup'),
         ('delivered', 'Delivered'),
     ]
+    
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
 
     tracking_number = models.CharField(
         max_length=36, unique=True, default=uuid.uuid4, editable=False
@@ -43,11 +47,14 @@ class Shipment(models.Model):
     volume = models.FloatField()
     origin = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
+    recepient_name = models.CharField(max_length=100, blank=True, null=True)
+    recepient_phone = models.CharField(max_length=20, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     address = models.CharField(max_length=200, blank=True, null=True)
     estimated_delivery_date = models.DateField(blank=True, null=True)
     shipment_cost = models.FloatField(default=0.0, blank=True, null=True)
     status = models.CharField(max_length=200,)
+    shipment_complete = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

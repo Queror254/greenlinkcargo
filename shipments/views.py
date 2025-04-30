@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Shipment, Invoice
 from setting_app.models import Rates
 from clients.models import Client
+from users.models import Business, Branch
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.http import HttpResponse
@@ -19,14 +20,30 @@ def getall_shipment(request):
     
 @login_required
 def createshipment_view(request):
-    clients = Client.objects.all()
+    user = request.user
+    
+    # Initialize variables
+    clients = Client.objects.none()
+    business = None
+
+    if user.role == 'admin':
+        # Admin can see all active clients in their business
+        business = get_object_or_404(Business, owner=user)
+        clients = Client.objects.filter(business=business)
+        
+    else:
+        # Staff can only see clients from their branch
+        branch = user.branch
+        business = branch.business
+        clients = Client.objects.filter(branch=branch)
+        
     
     if request.method == 'POST':
         client_id = request.POST.get('client')
-        
+        # chack if any client-id was provided in the POST request
         if client_id:
             client = get_object_or_404(Client, id=client_id)
-        else:
+        else: #if no then we create a new client :
             client_name = request.POST.get('client_name')
             client_email = request.POST.get('client_email')
             client_phone = request.POST.get('client_phone')
@@ -50,6 +67,8 @@ def createshipment_view(request):
         volume = request.POST.get('volume')
         origin = request.POST.get('origin')
         destination = request.POST.get('destination')
+        r_name = request.POST.get('recepient_name', '')
+        r_phone = request.POST.get('recepient_phone', '')
         tocity = request.POST.get('city')
         toaddress = request.POST.get('address')
         status = request.POST.get('status', '')
@@ -113,6 +132,7 @@ def createshipment_view(request):
 
         # Create the shipment
         shipment = Shipment.objects.create(
+            business=business,
             client=client,
             shipment_type=shipment_type,
             airwaybill=Airwaybill,
@@ -121,6 +141,8 @@ def createshipment_view(request):
             volume=volume,
             origin=origin,
             destination=destination,
+            recepient_name=r_name,
+            recepient_phone=r_phone,
             city=tocity,
             address=toaddress,
             status=status,
