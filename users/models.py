@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+
 
 # Custom user model, extending AbstractUser.
 class CustomUser(AbstractUser):
@@ -11,6 +13,27 @@ class CustomUser(AbstractUser):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staff')
     branch = models.ForeignKey('Branch', on_delete=models.SET_NULL, null=True, blank=True)
+    business = models.ForeignKey(
+        'Business',
+        on_delete=models.CASCADE,
+        related_name='employees',
+        null=True,
+        blank=True
+    )
+    
+    def clean(self):
+        """Validate business logic before saving"""
+        if self.role == 'staff' and not self.branch:
+            raise ValidationError("Staff must be assigned to a branch.")
+        
+        if self.branch and self.branch.business != self.business:
+            raise ValidationError("Selected branch does not belong to this business.")
+    
+    def save(self, *args, **kwargs):
+        # Auto-assign business if staff belongs to a branch
+        if self.branch and not self.business:
+            self.business = self.branch.business
+        super().save(*args, **kwargs)
     
     # NOTE: AbstractUser already provides first_name and last_name.
     def __str__(self):
@@ -65,7 +88,7 @@ class Business(models.Model):
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='business'
+        related_name='owned_business'
     )
     # Additionally, store the owner's email.
     owner_email = models.EmailField(blank=True, null=True, editable=False)
