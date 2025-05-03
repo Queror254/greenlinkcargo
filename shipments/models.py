@@ -43,6 +43,7 @@ class Shipment(models.Model):
     shipment_type = models.CharField(max_length=10, choices=SHIPMENT_TYPE_CHOICES)
     airwaybill = models.CharField(max_length=20, blank=True, null=True)
     seawaybill = models.CharField(max_length=20, blank=True, null=True)
+    quantity = models.CharField(max_length=150, blank=True, null=True)
     weight = models.FloatField()
     volume = models.FloatField()
     origin = models.CharField(max_length=100)

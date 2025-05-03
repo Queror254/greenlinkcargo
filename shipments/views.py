@@ -9,6 +9,65 @@ from django.utils.crypto import get_random_string
 from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from xhtml2pdf import pisa
+from django.utils import timezone
+
+#from weasyprint import HTML #requires system level dependacies
+
+def generate_shipment_receipt(request, shipment_id):
+    shipment = Shipment.objects.get(id=shipment_id)
+    domain = 'https://techmystique.pythonanywhere.com'
+    
+    context = {
+        'shipment': shipment,
+        'business': shipment.business,
+        'now': timezone.now().strftime("%Y-%m-%d %H:%M"),
+        'tracking_url': f"{domain}/shipments/track/shipment?tracking_number={shipment.tracking_number}/"
+    }
+    
+    html_string = render_to_string('shipments/receipt.html', context)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=package_receipt_{shipment.tracking_number}.pdf'
+    
+    pisa_status = pisa.CreatePDF(
+        html_string, 
+        dest=response,
+        encoding='UTF-8',
+        pagesize=(3.5*72, 6*72)  # Smaller receipt size
+    )
+    
+    if pisa_status.err:
+        return HttpResponse('PDF generation error')
+    return response
+
+
+@login_required
+def generate_invoice_pdf(shipment_id):
+    shipment = get_object_or_404(Shipment, id=shipment_id)
+    
+    context = {
+        'shipment': shipment,
+        'business': shipment.business,
+        'total_cost': shipment.calculate_rate
+    }
+    
+    # Render HTML template
+    html_string = render_to_string('shipments/invoice_pdf.html', context)
+    
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{shipment.tracking_number}.pdf"'
+    
+    # Generate PDF
+    pisa_status = pisa.CreatePDF(
+        html_string, 
+        dest=response,
+        encoding='UTF-8'
+    )
+    
+    if pisa_status.err:
+        return HttpResponse('PDF generation error')
+    return response
 
 @login_required
 def getall_shipment(request):

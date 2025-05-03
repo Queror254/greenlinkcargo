@@ -1,222 +1,93 @@
-{% load static %}
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>Invoice - {{ invoice.invoice_number }}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
-        /* Global Styles */
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f8f9fa;
+            font-family: Helvetica;
+            font-size: 12px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Header Section */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #000;
             padding-bottom: 10px;
         }
 
-        .header h4 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .header small {
-            font-size: 14px;
-            color: #555;
-        }
-
-        /* Invoice Details */
-        .invoice-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .invoice-info .section {
-            width: 48%;
-        }
-
-        .invoice-info address {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        /* Invoice Table */
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .table th,
-        .table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
+        .table td,
         .table th {
-            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .total {
             font-weight: bold;
-        }
-
-        /* Payment Methods */
-        .payment-methods {
-            margin-top: 20px;
-        }
-
-        .payment-methods img {
-            width: 50px;
-            margin-right: 10px;
-        }
-
-        /* Total Amount Section */
-        .total-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            border-top: 2px solid #ddd;
-            padding-top: 10px;
-        }
-
-        .total-section table {
-            width: 100%;
-        }
-
-        .total-section th,
-        .total-section td {
-            text-align: right;
-            padding: 5px;
-        }
-
-        .total-section td {
-            font-weight: bold;
-        }
-
-        /* Download Button */
-        .download-btn {
-            display: block;
-            text-align: center;
-            background: #007bff;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .download-btn:hover {
-            background: #0056b3;
+            font-size: 14px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Header Section -->
-        <div class="header">
-            <h4><i class="fas fa-globe"></i> GreenLink Cargo Ltd. test</h4>
-            <small>Date: {{ invoice.date_created|date:"M d, Y" }}</small>
-        </div>
+    <div class="header">
+        <h2>{{ business.name }} - Shipping Invoice</h2>
+        <p>Date: {% now "jS F Y" %}</p>
+        <p>Invoice #: {{ shipment.tracking_number }}</p>
+    </div>
 
-        <!-- Invoice Info -->
-        <div class="invoice-info">
-            <div class="section">
-                <h6><strong>From</strong></h6>
-                <address>
-                    GreenLink Cargo Ltd.<br>
-                    1234 Warehouse St.<br>
-                    Nairobi, Kenya<br>
-                    Phone: +254 700 123456<br>
-                    Email: info@greenlinkcargo.com
-                </address>
-            </div>
+    <div class="details">
+        <h3>Client Information</h3>
+        <p>Name: {{ shipment.client.name }}</p>
+        <p>Destination: {{ shipment.destination }}</p>
+        <p>Recipient: {{ shipment.recepient_name }}</p>
+    </div>
 
-            <div class="section">
-                <h6><strong>To</strong></h6>
-                <address>
-                    {{ invoice.client.name }}<br>
-                    {{ invoice.client.address }}<br>
-                    Phone: {{ invoice.client.phone }}<br>
-                    Email: {{ invoice.client.email }}<br>
-                </address>
-            </div>
-        </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Weight (kg)</th>
+                <th>Volume (m³)</th>
+                <th>Rate</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Base Rate</td>
+                <td>-</td>
+                <td>-</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+            </tr>
+            <tr>
+                <td>Weight Charge</td>
+                <td>{{ shipment.weight|floatformat:2 }}</td>
+                <td>-</td>
+                <td>$10.00/kg</td>
+                <td>${{ shipment.weight|multiply:10|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Volume Charge</td>
+                <td>-</td>
+                <td>{{ shipment.volume|floatformat:2 }}</td>
+                <td>$5.00/m³</td>
+                <td>${{ shipment.volume|multiply:5|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-        <!-- Invoice Details -->
-        <div class="invoice-info">
-            <div class="section">
-                <h6><strong>Invoice Details</strong></h6>
-                <p>
-                    <b>Invoice #:</b> {{ invoice.invoice_number }}<br>
-                    <b>Tracking ID:</b> {{ invoice.shipment.tracking_number }}<br>
-                    <b>Payment Due:</b> {{ invoice.date_created|date:"M d, Y" }}<br>
-                    <b>Amount:</b> KES {{ invoice.total_amount }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Invoice Table -->
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Qty</th>
-                    <th>Description</th>
-                    <th>Weight (kg)</th>
-                    <th>Subtotal (KES)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>{{ invoice.shipment.description }}</td>
-                    <td>{{ invoice.shipment.weight }}</td>
-                    <td>KES {{ invoice.total_amount }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Payment Methods & Total -->
-        <div class="total-section">
-            <div class="payment-methods">
-                <h6>Payment Methods</h6>
-                <img src="{% static 'images/visa.png' %}" alt="Visa">
-                <img src="{% static 'images/mastercard.png' %}" alt="Mastercard">
-            </div>
-
-            <div>
-                <h6>Total Amount Due</h6>
-                <table>
-                    <tr>
-                        <th>Subtotal:</th>
-                        <td>KES {{ invoice.total_amount }}</td>
-                    </tr>
-                    <tr>
-                        <th>Total:</th>
-                        <td><b>KES {{ invoice.total_amount }}</b></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+    <div class="total" style="margin-top: 20px;">
+        Total Amount: ${{ total_cost|floatformat:2 }}
     </div>
 </body>
 

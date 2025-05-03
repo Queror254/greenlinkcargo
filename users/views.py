@@ -41,6 +41,13 @@ def branch_list(request):
     return render(request, 'branch/branch_list.html', {'branches': branches})  
 
 def register_view(request):
+    if request.user.is_authenticated:
+        # Redirect already authenticated users to their respective dashboards
+        if request.user.role == 'admin':
+            return redirect('admin_dashboard')
+        elif request.user.role == 'staff':
+            return redirect('staff_dashboard')
+        
     if request.method == 'POST':
         # Extract user info
         firstname = request.POST['first_name']
@@ -212,6 +219,8 @@ def create_staff(request):
         email = request.POST['email']
         password = request.POST['password']
         role = 'staff'
+        username = f"{firstname.strip().lower()}{lastname.strip().lower()}"
+
         #get the branchid
         branch_id = request.POST.get('branch_id')
         branch = None
@@ -226,6 +235,7 @@ def create_staff(request):
         if role == 'staff':
             # Create the new user. Note: first_name and last_name are already in AbstractUser.
             user = CustomUser.objects.create(
+                username=username,
                 first_name=firstname,
                 last_name=lastname,
                 email=email,
@@ -407,6 +417,13 @@ def assign_staff_to_branch(request):
         staff.save()  # Business auto-assigned via save() method
         
 def login_view(request):
+    if request.user.is_authenticated:
+        # Redirect already authenticated users to their respective dashboards
+        if request.user.role == 'admin':
+            return redirect('admin_dashboard')
+        elif request.user.role == 'staff':
+            return redirect('staff_dashboard')
+        
     if request.method == 'POST':
         username_or_email = request.POST['username']
         password = request.POST['password']

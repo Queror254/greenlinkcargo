@@ -72,6 +72,10 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
      # Enable CORS
     #'corsheaders.middleware.CorsMiddleware', 
+    #
+    # subdomains
+    # 'subdomains.middleware.SubdomainMiddleware',
+    #
     # default
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,11 +85,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 #CORS_ALLOW_ALL_ORIGINS = False
 
 #CORS_ALLOWED_ORIGINS = [
 #   'http://localhost:5173',
 #]
+
+# parent host
+
 
 
 ROOT_URLCONF = 'core.urls'
