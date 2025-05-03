@@ -194,7 +194,7 @@
                                 <th>Origin</th>
                                 <th>Destination</th>
                                 <th>Status</th>
-                                <th>Rate</th>
+                                <th>Cost</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -208,30 +208,57 @@
                                 <td>{{ shipment.origin }}</td>
                                 <td>{{ shipment.destination }}</td>
                                 <td>{{ shipment.status }}</td>
-                                <td>${{ shipment.calculate_rate }}</td>
+                                <td>${{ shipment.shipment_cost }}</td>
                                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        {% if user.role == "admin" or user.role == "staff" %}
-                                        <!-- Admin/Staff Actions -->
-                                        <div class="d-flex flex-column gap-1">
-                                            <!-- View Button -->
-                                            <a href="{% url 'shipment_detail' shipment.id %}"
-                                                class="btn btn-sm btn-outline-info">View</a>
-                                            <a href="{% url 'update_shipment' shipment.id %}"
-                                                class="btn btn-sm btn-outline-warning">Edit</a>
+                                    <div class="d-flex align-items-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-info btn-sm dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item pay_sale_due"
+                                                        href="{% url 'mark_shipment_complete' shipment.id %}">
+                                                        Mark as Complete
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{% url 'shipment_detail' shipment.id %}">
+                                                        View
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item edit_contact_button"
+                                                        href="{% url 'update_shipment' shipment.id %}">
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item update_contact_status"
+                                                        href="{% url 'delete_shipment' shipment.id %}">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="">
+                                                        Invoice
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{% url 'generate_receipt' shipment.id %}">
+                                                        Shipment Receipt
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </div>
 
-                                        <div class="d-flex flex-column gap-1">
-                                            <!-- Delete Button -->
-                                            <a href="{% url 'delete_shipment' shipment.id %}"
-                                                class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Are you sure?');">Delete</a>
-                                            <!-- Invoice Button -->
-                                            <a href="{% url 'generate_invoice' shipment.id %}"
-                                                class="btn btn-sm btn-outline-success">Invoice</a>
-                                        </div>
-                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -284,11 +311,42 @@
                                 <td>{{ client.city|default:"N/A" }}</td>
                                 <td>{{ client.postalcode|default:"N/A" }}</td>
                                 <td>
-                                    <a href="{% url 'client_detail' client.id %}" class="btn btn-sm btn-info">View</a>
-                                    {% if user.is_staff %}
-                                    <a href="{% url 'update_client' client.id %}"
-                                        class="btn btn-sm btn-warning">Edit</a>
-                                    {% endif %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-info btn-sm dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'client_detail' client.id %}">
+                                                        View
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item edit_contact_button"
+                                                        href="{% url 'update_client' client.id %}">
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item update_contact_status"
+                                                        href="{% url 'delete_client' client.id %}">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'client_ledger' client.id %}">
+                                                        Ledger
+                                                    </a>
+                                                </li>
+                                                <li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}

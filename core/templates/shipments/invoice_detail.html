@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Invoice #{{ invoice.invoice_number }}</h4>
+                    <span
+                        class="badge bg-{% if invoice.payment_status == 'paid' %}success{% elif invoice.payment_status == 'overdue' %}danger{% else %}warning{% endif %}">
+                        {{ invoice.get_payment_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Bill To:</h5>
+                            <p>
+                                {{ invoice.client.name }}<br>
+                                {{ invoice.client.address|default:"" }}<br>
+                                {{ invoice.client.city|default:"" }}<br>
+                                {{ invoice.client.phone }}
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5>Shipment Details:</h5>
+                            <p>
+                                Tracking #: {{ invoice.shipment.tracking_number }}<br>
+                                Type: {{ invoice.shipment.get_shipment_type_display }}<br>
+                                Weight: {{ invoice.shipment.weight }} kg<br>
+                                Status: {{ invoice.shipment.get_status_display }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Shipping Charges</td>
+                                    <td class="text-end">${{ invoice.subtotal|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax</td>
+                                    <td class="text-end">${{ invoice.tax_amount|floatformat:2 }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td><strong>TOTAL</strong></td>
+                                    <td class="text-end"><strong>${{ invoice.total_amount|floatformat:2 }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'invoice_pdf' invoice.pk %}" class="btn btn-primary">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
+                        <a href="{% url 'update_payment' invoice.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Update Payment Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History Section -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Payment History</h5>
+                </div>
+                <div class="card-body">
+                    {% if invoice.payments.all %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Reference</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in invoice.payments.all %}
+                                <tr>
+                                    <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td>${{ payment.amount|floatformat:2 }}</td>
+                                    <td>{{ payment.get_method_display }}</td>
+                                    <td>{{ payment.reference|default:"-" }}</td>
+                                    <td>{{ payment.notes|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No payment records found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Quick Actions Sidebar -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Invoice Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
+                            <i class="fas fa-money-bill-wave"></i> Record Payment
+                        </a>
+                        <a href="#" class="btn btn-info">
+                            <i class="fas fa-envelope"></i> Send to Client
+                        </a>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="fas fa-print"></i> Print
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Summary -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Invoice Summary</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Issued Date:</dt>
+                        <dd class="col-sm-6">{{ invoice.issued_at|date:"M d, Y" }}</dd>
+
+                        <dt class="col-sm-6">Due Date:</dt>
+                        <dd class="col-sm-6">{{ invoice.due_date|date:"M d, Y" }}</dd>
+
+                        <dt class="col-sm-6">Days Remaining:</dt>
+                        <dd class="col-sm-6">
+                            {% if invoice.payment_status == 'paid' %}
+                            <span class="text-success">Paid</span>
+                            {% else %}
+                            {{ invoice.due_date|timeuntil }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-6">Amount Paid:</dt>
+                        <dd class="col-sm-6">${{ invoice.amount_paid|floatformat:2 }}</dd>
+
+                        <dt class="col-sm-6">Balance Due:</dt>
+                        <dd class="col-sm-6">${{ invoice.balance_due|floatformat:2 }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Record Payment Modal -->
+<div class="modal fade" id="recordPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Record Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-control" name="amount" step="0.01" min="0"
+                            max="{{ invoice.balance_due }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" name="method" required>
+                            <option value="cash">Cash</option>
+                            <option value="transfer">Bank Transfer</option>
+                            <option value="card">Credit Card</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reference</label>
+                        <input type="text" class="form-control" name="reference">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

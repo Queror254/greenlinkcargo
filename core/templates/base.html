@@ -243,13 +243,25 @@
             <!--begin::Sidebar Brand-->
             <div class="sidebar-brand">
                 <!--begin::Brand Link-->
-                <a href="./index.html" class="brand-link">
+                <a href="/" class="brand-link">
+                    {% if business %}
                     <!--begin::Brand Image-->
-                    <img src="{% static business.business_logo %}" alt="Logo" class="brand-image opacity-75 shadow" />
+                    <img src="{{ business.business_logo.url }}" alt="Logo" class="brand-image opacity-75 shadow" />
                     <!--end::Brand Image-->
                     <!--begin::Brand Text-->
                     <span class="brand-text fw-light"> {{business.name}}</span>
                     <!--end::Brand Text-->
+
+                    {% else %}
+                    <!--begin::Brand Image-->
+                    <img src="{% static 'images/business_logos/default_logo.png' %}" alt="Logo"
+                        class="brand-image opacity-75 shadow" />
+                    <!--end::Brand Image-->
+                    <!--begin::Brand Text-->
+                    <span class="brand-text fw-light"> Business </span>
+                    <!--end::Brand Text-->
+
+                    {% endif %}
                 </a>
                 <!--end::Brand Link-->
             </div>
@@ -521,8 +533,9 @@
             <!--end::To the end-->
             <!--begin::Copyright-->
             <strong>
-                Copyright &copy; 2024-2025&nbsp;
-                <a href="https://greenlinkcargo.com/" class="text-decoration-none">Greenlink Cargo</a>.
+                Copyright &copy; 2025&nbsp;
+                <a href="https://{{ business.website }}" target="_blank"
+                    class="text-decoration-none">{{business.name}}</a>.
             </strong>
             All rights reserved.
             <!--end::Copyright-- >

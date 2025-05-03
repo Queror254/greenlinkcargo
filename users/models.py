@@ -55,11 +55,12 @@ class Business(models.Model):
     currency_id = models.PositiveIntegerField()
     
     business_logo = models.ImageField(
-        upload_to='static/images/business_logos/', 
-        blank=True, 
-        null=True, 
-        help_text="Upload your business logo"
-    )
+    upload_to='images/business_logos/',
+    blank=True,
+    null=True,
+    help_text="Upload your business logo"
+)
+    
     website = models.URLField(blank=True, null=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
     alternate_number = models.CharField(max_length=20, blank=True, null=True)

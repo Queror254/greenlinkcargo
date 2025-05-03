@@ -1,6 +1,8 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
-from .models import Shipment, Invoice
+from .models import Shipment, Invoice, Payment
 from setting_app.models import Rates
 from clients.models import Client
 from users.models import Business, Branch
@@ -10,9 +12,93 @@ from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from xhtml2pdf import pisa
 from django.utils import timezone
+from django.db.models import Sum
 
-#from weasyprint import HTML #requires system level dependacies
 
+class ClientLedgerView(DetailView):
+    model = Client
+    template_name = 'shipments/client_ledger.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invoices = Invoice.objects.filter(client=self.object).select_related('shipment')
+        
+        context['invoices'] = invoices
+        context['total_owed'] = invoices.aggregate(
+            total=Sum('total_amount')
+        )['total'] or 0
+        context['total_paid'] = Payment.objects.filter(
+            invoice__client=self.object
+        ).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+        
+        return context
+ 
+class InvoiceDetailView(DetailView):
+    model = Invoice
+    template_name = 'shipments/invoice_detail.html'
+    context_object_name = "invoice"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['payments'] = self.object.payments.all()
+        return context
+
+@login_required
+def generate_invoice_pdf(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    context = {
+        'invoice': invoice,
+        'payments': invoice.payments.all(),
+        'business': invoice.business
+    }
+    
+    html = render_to_string('invoices/invoice_pdf.html', context)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=invoice_{invoice.invoice_number}.pdf'
+    
+    pisa.CreatePDF(html, dest=response)
+    return response
+
+class UpdatePaymentStatusView(UpdateView):
+    model = Invoice
+    fields = ['payment_status']  # Make sure this matches your form field
+    template_name = 'shipments/update_payment.html'
+    
+    def form_valid(self, form):
+        # Get the form instance
+        invoice = form.save(commit=False)
+        
+        # Handle payment recording if status is paid/partial
+        if invoice.payment_status in ['paid', 'partial']:
+            try:
+                amount = float(self.request.POST.get('amount', 0))
+                if amount > 0:
+                    Payment.objects.create(
+                        invoice=invoice,
+                        amount=amount,
+                        method=self.request.POST.get('payment_method', 'other'),
+                        reference=self.request.POST.get('reference', ''),
+                        notes=self.request.POST.get('notes', '')
+                    )
+            except (ValueError, TypeError):
+                messages.error(self.request, 'Invalid payment amount')
+                return self.form_invalid(form)
+        
+        # Save the invoice
+        invoice.save()
+        
+        # Update payment status based on actual payments
+        invoice.update_payment_status()
+        
+        messages.success(self.request, 'Payment status updated successfully')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('invoice_detail', kwargs={'pk': self.object.pk})
+
+@login_required   
 def generate_shipment_receipt(request, shipment_id):
     shipment = Shipment.objects.get(id=shipment_id)
     domain = 'https://techmystique.pythonanywhere.com'
@@ -40,34 +126,19 @@ def generate_shipment_receipt(request, shipment_id):
         return HttpResponse('PDF generation error')
     return response
 
-
 @login_required
-def generate_invoice_pdf(shipment_id):
-    shipment = get_object_or_404(Shipment, id=shipment_id)
-    
-    context = {
-        'shipment': shipment,
-        'business': shipment.business,
-        'total_cost': shipment.calculate_rate
-    }
-    
-    # Render HTML template
-    html_string = render_to_string('shipments/invoice_pdf.html', context)
-    
-    # Create PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="invoice_{shipment.tracking_number}.pdf"'
-    
-    # Generate PDF
-    pisa_status = pisa.CreatePDF(
-        html_string, 
-        dest=response,
-        encoding='UTF-8'
-    )
-    
-    if pisa_status.err:
-        return HttpResponse('PDF generation error')
-    return response
+def mark_shipment_complete(request, pk):
+    shipment = get_object_or_404(Shipment, pk=pk)
+
+    if shipment.shipment_complete:
+        messages.info(request, "Shipment is already marked as complete.")
+    else:
+        shipment.shipment_complete = True
+        shipment.status = "delivered"  # Optional: update status
+        shipment.save()
+        messages.success(request, "Shipment marked as complete.")
+
+    return redirect('shipment_detail', pk=shipment.pk)  # or wherever you want to redirect
 
 @login_required
 def getall_shipment(request):
@@ -122,6 +193,8 @@ def createshipment_view(request):
             )
         
         shipment_type = request.POST.get('shipment_type')
+        shipment_quantity = request.POST.get('quantity');
+        shipment_cost = request.POST.get('shipment_cost')
         weight = request.POST.get('weight')
         volume = request.POST.get('volume')
         origin = request.POST.get('origin')
@@ -196,6 +269,7 @@ def createshipment_view(request):
             shipment_type=shipment_type,
             airwaybill=Airwaybill,
             seawaybill=Seawaybill,
+            quantity=shipment_quantity,
             weight=weight,
             volume=volume,
             origin=origin,
@@ -211,7 +285,6 @@ def createshipment_view(request):
         return redirect('shipment_detail', shipment_id=shipment.id)
 
     return render(request, 'shipments/create_shipment.html', {'clients': clients})
-
 
 
 @login_required
@@ -301,7 +374,7 @@ def invoice_detail(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     return render(request, 'invoices/invoice_detail.html', {'invoice': invoice})
 
-def generate_invoice_pdf(request, invoice_id):
+def generate_invoice_pdfx(request, invoice_id):
     # Fetch the existing invoice
     invoice = get_object_or_404(Invoice, id=invoice_id)
 

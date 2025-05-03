@@ -27,10 +27,42 @@
                 <td>{{ client.city|default:"N/A" }}</td>
                 <td>{{ client.postalcode|default:"N/A" }}</td>
                 <td>
-                    <a href="{% url 'client_detail' client.id %}" class="btn btn-sm btn-info">View</a>
-                    {% if user.is_staff %}
-                    <a href="{% url 'update_client' client.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    {% endif %}
+                    <div class="d-flex align-items-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'client_detail' client.id %}">
+                                        View
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item edit_contact_button"
+                                        href="{% url 'update_client' client.id %}">
+                                        Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item update_contact_status"
+                                        href="{% url 'delete_client' client.id %}">
+                                        Delete
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'client_ledger' client.id %}">
+                                        Ledger
+                                    </a>
+                                </li>
+                                <li>
+                            </ul>
+                        </div>
+                    </div>
                 </td>
             </tr>
             {% empty %}

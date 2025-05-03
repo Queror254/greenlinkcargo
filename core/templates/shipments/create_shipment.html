@@ -167,15 +167,31 @@
                 </div>
             </div>
 
-            <div class="mb-3" id="weight_container">
-                <label for="weight" class="form-label">Weight (kg) if by air:</label>
-                <input type="number" step="0.01" name="weight" id="weight" class="form-control">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3" id="weight_container">
+                        <label for="weight" class="form-label">Weight (kg) if by air: quantity</label>
+                        <input type="number" step="0.01" name="weight" id="weight" class="form-control">
+                    </div>
+                    <div class="mb-3" id="volume_container">
+                        <label for="volume" class="form-label">Cubic Meter (CBM) if by sea:</label>
+                        <input type="number" step="0.01" name="volume" id="volume" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                        <input type="text" name="quantity" class="form-control" placeholder="1 box, 4 pcs, etc...">
+                    </div>
+                </div>
             </div>
-            <div class="mb-3" id="volume_container">
-                <label for="volume" class="form-label">Cubic Meter (CBM) if by sea:</label>
-                <input type="number" step="0.01" name="volume" id="volume" class="form-control">
-            </div>
+
             <div class="mb-3">
+                <label for="shipment_cost" class="form-label">shipment Cost:</label>
+                <input type="text" name="shipment_cost" id="shipment_cost" class="form-control" placeholder="$ 0.0">
+            </div>
+
+            <div class=" mb-3">
                 <label for="status" class="form-label">Shipment Status:</label>
                 <input type="text" name="status" id="status" class="form-control"
                     placeholder="In progress, received, in-transit">

@@ -1,3 +1,4 @@
+<!-- templates/shipments/invoice_pdf.html -->
 <!DOCTYPE html>
 <html>
 
@@ -9,7 +10,7 @@
         }
 
         body {
-            font-family: Helvetica;
+            font-family: Arial;
             font-size: 12px;
         }
 
@@ -24,70 +25,121 @@
             margin-top: 20px;
         }
 
+        .table th {
+            background: #f5f5f5;
+            text-align: left;
+        }
+
         .table td,
         .table th {
             border: 1px solid #ddd;
             padding: 8px;
         }
 
-        .total {
+        .total-row {
             font-weight: bold;
-            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #ff9800;
+        }
+
+        .status-paid {
+            background: #4caf50;
+        }
+
+        .status-overdue {
+            background: #f44336;
         }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <h2>{{ business.name }} - Shipping Invoice</h2>
-        <p>Date: {% now "jS F Y" %}</p>
-        <p>Invoice #: {{ shipment.tracking_number }}</p>
+        <h2>{{ business.name }}</h2>
+        <h3>INVOICE #{{ invoice.invoice_number }}</h3>
+        <p>
+            Issued: {{ invoice.issued_at|date:"M d, Y" }} |
+            Due: {{ invoice.due_date|date:"M d, Y" }}
+        </p>
+        <span class="status-badge status-{{ invoice.payment_status }}">
+            {{ invoice.get_payment_status_display|upper }}
+        </span>
     </div>
 
-    <div class="details">
-        <h3>Client Information</h3>
-        <p>Name: {{ shipment.client.name }}</p>
-        <p>Destination: {{ shipment.destination }}</p>
-        <p>Recipient: {{ shipment.recepient_name }}</p>
+    <div style="margin-top: 20px;">
+        <div style="float: left; width: 50%;">
+            <strong>Bill To:</strong><br>
+            {{ invoice.client.name }}<br>
+            {{ invoice.client.address|default:"" }}<br>
+            {{ invoice.client.city|default:"" }}
+        </div>
+        <div style="float: right; width: 50%; text-align: right;">
+            <strong>Shipment Details:</strong><br>
+            Tracking #: {{ invoice.shipment.tracking_number }}<br>
+            Type: {{ invoice.shipment.get_shipment_type_display }}<br>
+            Weight: {{ invoice.shipment.weight }} kg<br>
+            Volume: {{ invoice.shipment.volume }} m³
+        </div>
+        <div style="clear: both;"></div>
     </div>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Description</th>
-                <th>Weight (kg)</th>
-                <th>Volume (m³)</th>
-                <th>Rate</th>
                 <th>Amount</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Base Rate</td>
-                <td>-</td>
-                <td>-</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
+                <td>Shipping Charges</td>
+                <td>${{ invoice.subtotal|floatformat:2 }}</td>
             </tr>
             <tr>
-                <td>Weight Charge</td>
-                <td>{{ shipment.weight|floatformat:2 }}</td>
-                <td>-</td>
-                <td>$10.00/kg</td>
-                <td>${{ shipment.weight|multiply:10|floatformat:2 }}</td>
+                <td>Tax</td>
+                <td>${{ invoice.tax_amount|floatformat:2 }}</td>
             </tr>
-            <tr>
-                <td>Volume Charge</td>
-                <td>-</td>
-                <td>{{ shipment.volume|floatformat:2 }}</td>
-                <td>$5.00/m³</td>
-                <td>${{ shipment.volume|multiply:5|floatformat:2 }}</td>
+            <tr class="total-row">
+                <td>TOTAL</td>
+                <td>${{ invoice.total_amount|floatformat:2 }}</td>
             </tr>
         </tbody>
     </table>
 
-    <div class="total" style="margin-top: 20px;">
-        Total Amount: ${{ total_cost|floatformat:2 }}
+    {% if payments %}
+    <h4>Payment History</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Reference</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                <td>${{ payment.amount|floatformat:2 }}</td>
+                <td>{{ payment.get_method_display }}</td>
+                <td>{{ payment.reference|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <div style="margin-top: 30px;">
+        <p><strong>Notes:</strong> {{ invoice.notes|default:"Thank you for your business!" }}</p>
     </div>
 </body>
 

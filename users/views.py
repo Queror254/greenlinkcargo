@@ -461,7 +461,7 @@ def admin_dashboard(request):
     business = get_object_or_404(Business, owner=user)
 
     # Get shipments and clients related to the business
-    shipments = Shipment.objects.filter(business=business)
+    shipments = Shipment.objects.filter(business=business, shipment_complete=False)
     clients = Client.objects.filter(business=business)
 
     context = {
@@ -483,12 +483,13 @@ def staff_dashboard(request):
         business_id = branch.business.id
         business = get_object_or_404(Business, id=business_id)
         
-    shipments = Shipment.objects.filter(business=business)
+    shipments = Shipment.objects.filter(business=business, shipment_complete=False)
     clients = Client.objects.filter(business=business)
     total_clients = clients.count()
     total_shipments = shipments.count()
     return render(request, 'dash/staff_dashboard.html', {
-        'shipments': shipments, 
+        'shipments': shipments,
+        'clients': clients, 
         'business': business, 
         'total_shipments': total_shipments,
         'total_clients': total_clients

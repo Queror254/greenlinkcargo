@@ -5,19 +5,108 @@ from users.models import Business
 import uuid
 from datetime import datetime
 from django.utils.timezone import now
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from django.urls import reverse
+
 
 class Invoice(models.Model):
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('partial', 'Partially Paid'),
+        ('paid', 'Fully Paid'),
+        ('overdue', 'Overdue'),
+    ]
+    
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
     invoice_number = models.CharField(max_length=20, unique=True, blank=True)
-    shipment = models.OneToOneField('Shipment', on_delete=models.CASCADE)  
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    issued_at = models.DateTimeField(default=now)
-    paid = models.BooleanField(default=False)
+    shipment = models.OneToOneField('Shipment', on_delete=models.CASCADE, related_name='invoice')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=True, null=True)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
+    tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    issued_at = models.DateTimeField(default=timezone.now)
+    due_date = models.DateField(blank=True, null=True)
+    payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    notes = models.TextField(blank=True)
+
+    @property
+    def shipment_cost(self):
+        """Returns the actual shipment cost from the associated shipment"""
+        return self.shipment.shipment_cost or self.shipment.calculate_rate
+    
+    
+    def save(self, *args, **kwargs):
+        if not self.invoice_number:
+            self.invoice_number = self.generate_invoice_number()
+        
+        # Ensure financial fields are in sync with shipment
+        if not self.subtotal or not self.total_amount:
+            self.subtotal = self.shipment_cost
+            self.tax_amount = self.subtotal * 0.1
+            self.total_amount = self.subtotal + self.tax_amount
+            
+        super().save(*args, **kwargs)
+        
+    def update_payment_status(self):
+        """Automatically determine the correct payment status"""
+        total_paid = sum(payment.amount for payment in self.payments.all())
+        
+        if total_paid >= self.total_amount:
+            self.payment_status = 'paid'
+        elif total_paid > 0:
+            self.payment_status = 'partial'
+        elif self.due_date and timezone.now().date() > self.due_date:
+            self.payment_status = 'overdue'
+        else:
+            self.payment_status = 'pending'
+        
+        self.save(update_fields=['payment_status'])
+    
+    @property
+    def balance_due(self):
+        return max(self.total_amount - sum(p.amount for p in self.payments.all()), 0)
+    
+    def get_absolute_url(self):
+        return reverse('invoice_detail', kwargs={'pk': self.pk})
+        
+    @property
+    def amount_paid(self):  
+        return sum(payment.amount for payment in self.payments.all())
+
+    #@property
+    #def balance_due(self):
+    #    return self.total_amount - self.amount_paid
 
     def __str__(self):
         return f"Invoice {self.invoice_number} - {self.client.name}"
 
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ('cash', 'Cash'),
+        ('transfer', 'Bank Transfer'),
+        ('card', 'Credit Card'),
+        ('other', 'Other'),
+    ]
+    
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    payment_date = models.DateTimeField(default=timezone.now)
+    method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='cash')
+    reference = models.CharField(max_length=50, blank=True)
+    notes = models.TextField(blank=True)
+        
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        
+        # Update invoice status and verify payment doesn't exceed balance
+        if self.amount > self.invoice.balance_due:
+            raise ValueError("Payment amount exceeds invoice balance")
+        
+        self.invoice.update_payment_status()
+    
+    def __str__(self):
+        return f"Payment of ${self.amount} for {self.invoice}"
 
 
 class Shipment(models.Model):
@@ -78,3 +167,21 @@ class Shipment(models.Model):
 
     def __str__(self):
         return f"Shipment {self.tracking_number} from {self.origin} to {self.destination} - {self.status.title()}"
+    
+    def create_invoice(self):
+        if not hasattr(self, 'invoice'):
+            # Use either the calculated rate or manual shipment_cost, whichever is higher
+            subtotal = max(self.calculate_rate, self.shipment_cost or 0)
+            tax_amount = subtotal * 0  # Example 10% tax
+            total_amount = subtotal + tax_amount
+            
+            return Invoice.objects.create(
+                business=self.business,
+                shipment=self,
+                client=self.client,
+                subtotal=subtotal,
+                tax_amount=tax_amount,
+                total_amount=total_amount,
+                due_date=timezone.now() + timezone.timedelta(days=30)
+            )
+        return self.invoice

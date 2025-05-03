@@ -82,7 +82,7 @@
                 <p><b>Invoice #:</b> {{ invoice.invoice_number }}</p>
                 <p><b>Tracking ID:</b> {{ invoice.shipment.tracking_number }}</p>
                 <p><b>Payment Due:</b> {{ invoice.date_created|date:"M d, Y" }}</p>
-                <p><b>Amount:</b> KES {{ invoice.total_amount }}</p>
+                <p><b>Amount:</b> $ {{ invoice.total_amount }}</p>
             </div>
         </div>
 
@@ -102,7 +102,7 @@
                             <td>1</td>
                             <td>{{ invoice.shipment.description }}</td>
                             <td>{{ invoice.shipment.weight }}</td>
-                            <td>KES {{ invoice.total_amount }}</td>
+                            <td>$ {{ invoice.total_amount }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -121,11 +121,11 @@
                 <table class="table">
                     <tr>
                         <th>Subtotal:</th>
-                        <td>KES {{ invoice.total_amount }}</td>
+                        <td>$ {{ invoice.total_amount }}</td>
                     </tr>
                     <tr>
                         <th>Total:</th>
-                        <td><b>KES {{ invoice.total_amount }}</b></td>
+                        <td><b>$ {{ invoice.total_amount }}</b></td>
                     </tr>
                 </table>
             </div>
@@ -133,7 +133,7 @@
 
         <div class="row no-print">
             <div class="col-12">
-                <a href="{% url 'generate_invoice_pdf' invoice.id %}" class="btn btn-primary">
+                <a href="{% url 'invoice_pdf' invoice.id %}" class="btn btn-primary">
                     <i class="fas fa-download"></i> Generate PDF
                 </a>
             </div>

@@ -34,7 +34,7 @@
                 <td>{{ shipment.recepient_name }}</td>
                 <td>{{ shipment.recepient_phone }}</td>
                 <td>{{ shipment.status }}</td>
-                <td>KES{{ shipment.shipment_cost }}</td>
+                <td>${{ shipment.shipment_cost }}</td>
                 <td>{{ shipment.shipment_complete }}</td>
                 <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
                 <td>
@@ -45,11 +45,6 @@
                                 Actions
                             </button>
                             <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item pay_sale_due" href="#">
-                                        Pay
-                                    </a>
-                                </li>
                                 <li>
                                     <a class="dropdown-item" href="{% url 'shipment_detail' shipment.id %}">
                                         View
@@ -71,8 +66,19 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'invoice_generate' shipment.id %}">
+                                    <a class="dropdown-item pay_sale_due"
+                                        href="{% url 'mark_shipment_complete' shipment.id %}">
+                                        Mark as Complete
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'invoice_detail' shipment.invoice.id %}">
                                         Invoice
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'invoice_detail' shipment.id %}">
+                                        InvoiceTest
                                     </a>
                                 </li>
                                 <li>
