@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: 3.5in 3in;
+            /* Compact size */
+            margin: 0.1in;
+        }
+
+
+        body {
+            font-family: "Courier New", monospace;
+            font-size: 9pt;
+            line-height: 1.1;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+
+        .tracking-box {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: center;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-top: 4px;
+            margin-bottom: 7px;
+        }
+
+        .divider {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        {{ business.name|upper }}
+        <div style="font-size: 8pt;">PACKAGE IDENTIFICATION</div>
+    </div>
+
+    <div class="tracking-box">
+        {{ shipment.tracking_number }}
+    </div>
+
+    <div class="divider">
+        <strong>SHIPMENT TYPE:</strong> {{ shipment.get_shipment_type_display }}<br>
+        {% if shipment.shipment_type == 'air' %}
+        <strong>AWB:</strong> {{ shipment.airwaybill }}<br>
+        {% else %}
+        <strong>SWB:</strong> {{ shipment.seawaybill }}<br>
+        {% endif %}
+        <strong>DATE:</strong> {{ now }}<br>
+    </div>
+
+
+    <div class="divider">
+        <strong>ORIGIN:</strong> {{ shipment.origin }}<br>
+        <strong>DESTINATION:</strong> {{ shipment.destination }}<br>
+        <strong>WEIGHT:</strong> {{ shipment.weight }} kg<br>
+        <strong>VOLUME:</strong> {{ shipment.volume }} m³<br>
+    </div>
+
+    <div class="divider"></div>
+</body>
+
+</html>
