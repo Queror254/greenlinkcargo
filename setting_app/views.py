@@ -1,7 +1,61 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework import viewsets
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import Rates
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from .models import Rates, Taxes, Additionalcosts
+from .serializers import TaxesSerializer, AdditionalcostsSerializer
+from .forms import TaxesForm, AdditionalCostsForm
+
+
+# Taxes Views
+class TaxesListView(ListView):
+    model = Taxes
+    template_name = 'taxes/taxes_list.html'
+    context_object_name = 'taxes'
+
+class TaxesCreateView(CreateView):
+    model = Taxes
+    form_class = TaxesForm
+    template_name = 'taxes/taxes_form.html'
+    success_url = reverse_lazy('taxes-list')
+
+class TaxesUpdateView(UpdateView):
+    model = Taxes
+    form_class = TaxesForm
+    template_name = 'taxes/taxes_form.html'
+    success_url = reverse_lazy('taxes-list')
+
+class TaxesDeleteView(DeleteView):
+    model = Taxes
+    template_name = 'taxes/taxes_confirm_delete.html'
+    success_url = reverse_lazy('taxes-list')
+
+# AdditionalCosts Views
+class AdditionalCostsListView(ListView):
+    model = Additionalcosts
+    template_name = 'additionalcosts/additionalcosts_list.html'
+    context_object_name = 'additional_costs'
+
+class AdditionalCostsCreateView(CreateView):
+    model = Additionalcosts
+    form_class = AdditionalCostsForm
+    template_name = 'additionalcosts/additionalcosts_form.html'
+    success_url = reverse_lazy('additionalcosts-list')
+
+class AdditionalCostsUpdateView(UpdateView):
+    model = Additionalcosts
+    form_class = AdditionalCostsForm
+    template_name = 'additionalcosts/additionalcosts_form.html'
+    success_url = reverse_lazy('additionalcosts-list')
+
+class AdditionalCostsDeleteView(DeleteView):
+    model = Additionalcosts
+    template_name = 'additionalcosts/additionalcosts_confirm_delete.html'
+    success_url = reverse_lazy('additionalcosts-list')
+
+
 
 def business_settings(request):
     rates = Rates.objects.first()  # Assuming one rate record exists
