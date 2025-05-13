@@ -1,17 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'settings.html' %}
+{% load static %}
 
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Tax Rates</h2>
-
-    <div class="mb-3">
-        <a href="{% url 'taxes-create' %}" class="btn btn-success">
-            <i class="fas fa-plus"></i> Add New Tax
-        </a>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
+{% block settings_content %}
+<div class="container-fluid w-70">
+    <div class="row justify-content-center">
+        <div class="card p-4 mt-3 mb-3">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            <a href="{% url 'taxes-create' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add New Tax
+            </a>
             <table class="table table-hover">
                 <thead class="thead-light">
                     <tr>
@@ -41,6 +42,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>

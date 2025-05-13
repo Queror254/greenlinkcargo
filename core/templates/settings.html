@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --sidebar-width: 200px;
+        --header-height: 60px;
+        --sidebar-bg: #2c3e50;
+        --sidebar-active-bg: #34495e;
+        --sidebar-text: #ecf0f1;
+        --sidebar-active-text: #3498db;
+    }
+
+    /* Override main-wrapper from base.html */
+    .main-wrapper {
+        display: flex;
+        min-height: calc(100vh - var(--header-height));
+    }
+
+    .settings-container {
+        display: flex;
+        flex-direction: row;
+        /* Stack children vertically */
+        align-items: center;
+        /* Center horizontally */
+        justify-content: center;
+        /* Center vertically (if needed) */
+        text-align: center;
+        /* Center text inside children */
+        /* Optional: Set a max-width */
+        margin: 0 auto;
+        /* Center the container itself */
+    }
+
+    /* Sidebar styles */
+    .settings-sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: sticky;
+        top: 20px;
+        left: 20px;
+        background-color: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        overflow-y: auto;
+        transition: all 0.3s;
+        z-index: 1000;
+    }
+
+    .settings-sidebar-header {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+    }
+
+    .settings-sidebar-nav {
+        padding: 1rem 0;
+    }
+
+    .settings-nav-item {
+        padding: 0.5rem 1rem;
+        margin: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        color: var(--sidebar-text);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .settings-nav-item:hover,
+    .settings-nav-item.active {
+        background-color: var(--sidebar-active-bg);
+        color: var(--sidebar-active-text);
+        border-left: 3px solid var(--sidebar-active-text);
+    }
+
+    .settings-nav-item i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .settings-content {
+        flex: 1;
+        padding: 2rem;
+        background-color: #f8f9fa;
+    }
+
+    .scrollable-content {
+        max-height: calc(150vh - var(--header-height) - 4rem);
+        overflow-y: auto;
+    }
+
+    /* Rest of your settings-specific styles... */
+    /* (Include all the other styles from your original settings.html) */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container row gap-10">
+    <!-- Sidebar -->
+    <aside class="settings-sidebar col-lg-2">
+        <div class="settings-sidebar-header">
+            <h4 class="m-0"><i class="fas fa-cog me-2"></i> Settings</h4>
+        </div>
+
+        <nav class="settings-sidebar-nav">
+            {% block sidebar_nav %}
+            <!-- Default navigation items -->
+            <a href="{% url 'general_settings' %}" class="settings-nav-item active">
+                <span>Business</span>
+            </a>
+
+            <a href="{% url 'taxes-list' %}" class="settings-nav-item">
+                <span>Tax Rates</span>
+            </a>
+
+            <a href="{% url 'shipping_rate_settings' %}" class="settings-nav-item">
+                <span>Shipping Rates</span>
+            </a>
+
+            <a href="#" class="settings-nav-item">
+                <span>Additional Costs</span>
+            </a>
+
+            <a href="#" class="settings-nav-item">
+                <span>Shipping</span>
+            </a>
+
+            <a href="#" class="settings-nav-item">
+                <span>Users</span>
+            </a>
+
+            <a href="#" class="settings-nav-item">
+                <span>Permissions</span>
+            </a>
+            {% endblock %}
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="settings-content col-12 col-md-8 col-lg-8 order-md-2">
+        <div class="scrollable-content">
+            {% block messages %}
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endblock %}
+
+            {% block settings_content %}
+            <!-- Main content will be inserted here -->
+            {% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Settings page specific JavaScript
+    document.addEventListener('DOMContentLoaded', function () {
+        // Highlight active navigation item
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.settings-nav-item');
+
+        navItems.forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

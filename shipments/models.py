@@ -8,6 +8,8 @@ from django.utils.timezone import now
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.urls import reverse
+from django.db.models import Sum
+
 
 
 class Invoice(models.Model):
@@ -150,10 +152,31 @@ class Shipment(models.Model):
 
     @property
     def calculate_rate(self):
-        base_rate = 50  # Flat rate
-        weight_rate = self.weight * 10
-        volume_rate = self.volume * 5
-        return base_rate + weight_rate + volume_rate
+        from setting_app.models import Additionalcosts, Rates
+        try:
+            # Get the rates for this business
+            rates = Rates.objects.get(business=self.business)
+        except Rates.DoesNotExist:
+            # Fallback rates if none are set
+            rates = Rates(weight_rate=10, cbm_rate=5)  # Default rates
+            
+        weight_rate = self.weight * rates.weight_rate
+        volume_rate = self.volume * rates.cbm_rate
+        #
+        # Calculate sum of all additional costs for this shipment
+        additional_costs_sum = Additionalcosts.objects.filter(
+            shipment=self
+        ).aggregate(
+            total=Sum('value')
+        )['total'] or 0
+        
+        if self.shipment_type == 'air':
+        # Air shipments use weight-based calculation
+            return weight_rate + additional_costs_sum
+        else :
+            # Sea shipments use volume-based calculation
+            return volume_rate + additional_costs_sum
+
 
     def save(self, *args, **kwargs):
         # Auto-generate the airwaybill or seawaybill if not provided

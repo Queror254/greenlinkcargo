@@ -1,13 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'settings.html' %}
 {% load static %}
 
 {% block title %}Update Profile{% endblock %}
 
-{% block content %}
+{% block settings_content %}
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-12 order-md-2"
-            style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+        <div style="max-height: 100vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
             <div class="card p-4 mt-3 mb-3">
                 {% if messages %}
                 {% for message in messages %}

@@ -1,11 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'settings.html' %}
+{% load static %}
 
-{% block content %}
-<div class="container mt-4">
+{% block settings_content %}
+<div class="container mt-4 d-block">
     <div class="card">
-        <div class="card-header">
-            <h3>{% if object %}Update{% else %}Create{% endif %} Tax Rate</h3>
-        </div>
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}

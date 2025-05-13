@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'shipments',
     #handles payments, accounting, reporting
     'finance',
-    'setting_app'
+    'setting_app',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'

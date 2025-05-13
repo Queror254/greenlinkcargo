@@ -41,6 +41,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    {% block extra_css %}{% endblock %}
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -469,7 +471,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{% url 'business_settings' %}" class="nav-link">
+                                    <a href="{% url 'shipping_rate_settings' %}" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
                                         <p>rates</p>
                                     </a>
@@ -777,6 +779,8 @@
         sparkline3.render();
     </script>
     <!--end::Script-->
+
+    {% block extra_js %}{% endblock %}
 
 </body>
 <!--end::Body-->

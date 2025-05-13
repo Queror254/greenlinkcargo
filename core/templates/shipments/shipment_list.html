@@ -7,6 +7,11 @@
 <div class="container mt-4">
     <h2>All Shipments</h2>
     <table class="table table-striped table-bordered">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         <thead>
             <tr>
                 <th>Tracking Number</th>
@@ -54,6 +59,12 @@
                                     <a class="dropdown-item edit_contact_button"
                                         href="{% url 'update_shipment' shipment.id %}">
                                         Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item additional_cost-button"
+                                        href="{% url 'additionalcosts-create' %}?shipment_id={{ shipment.id }}">
+                                        Additional cost
                                     </a>
                                 </li>
                                 <li>

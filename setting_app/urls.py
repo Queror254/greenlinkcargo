@@ -1,11 +1,12 @@
 from django.urls import path
-from .views import business_settings, update_weight_rate, update_cbm_rate
+from .views import business_settings, update_weight_rate, update_cbm_rate, index
 from users.views import update_admin_profile
 from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path("rates/", business_settings, name="business_settings"),
+    path("test/", index, name="test_url"),
+    path("rates/", business_settings, name="shipping_rate_settings"),
     path('business/', update_admin_profile, name="general_settings"),
     path("update-weight/", update_weight_rate, name="update_weight_rate"),
     path("update-cbm/", update_cbm_rate, name="update_cbm_rate"),

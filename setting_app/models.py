@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Business
+from shipments.models import Shipment
 
 class Rates(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
@@ -19,5 +20,6 @@ class Taxes(models.Model):
     )
     
 class Additionalcosts(models.Model):
+    shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     value = models.DecimalField(max_digits=20, decimal_places=2)
