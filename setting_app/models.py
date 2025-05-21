@@ -2,15 +2,25 @@ from django.db import models
 from users.models import Business
 from shipments.models import Shipment
 
+#Shipping rates models
 class Rates(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
-    weight_rate = models.FloatField(verbose_name="Rate per Kilogram")
-    cbm_rate = models.FloatField(verbose_name="Rate per Cubic Meter")
+    route = models.CharField(max_length=100, null=True, blank=True)
+    weight_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    cbm_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    #remember to change this fields during migration
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,  null=True, blank=True)
 
     def __str__(self):
-        return f"Weight Rate: {self.weight_rate}, CBM Rate: {self.cbm_rate}"
-    
+        return f"{self.route} - ${self.weight_rate}/kg, ${self.cbm_rate}/m³"
+
+    class Meta:
+        verbose_name_plural = "Shipping Rates"
+        
+#Tax model     
 class Taxes(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     rate = models.DecimalField(
         max_digits=5, 

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core import serializers
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -15,6 +16,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# logic for role based access
 def role_required(required_role):
     def decorator(view_func):
         @wraps(view_func)
@@ -31,6 +33,7 @@ def role_required(required_role):
     return decorator
  
  
+ # branch list
 @login_required
 @role_required('admin')
 def branch_list(request):
@@ -40,6 +43,7 @@ def branch_list(request):
         return render(request, '403.html', {'error': 'You are not authorized to view this shipment'})
     return render(request, 'branch/branch_list.html', {'branches': branches})  
 
+# register new business account
 def register_view(request):
     if request.user.is_authenticated:
         # Redirect already authenticated users to their respective dashboards
@@ -155,6 +159,43 @@ def register_view(request):
     
     return render(request, 'users/signup.html')
 
+# render login page        
+def login_view(request):
+    if request.user.is_authenticated:
+        # Redirect already authenticated users to their respective dashboards
+        if request.user.role == 'admin':
+            return redirect('admin_dashboard')
+        elif request.user.role == 'staff':
+            return redirect('staff_dashboard')
+        
+    if request.method == 'POST':
+        username_or_email = request.POST['username']
+        password = request.POST['password']
+        
+        # Try to authenticate with username first
+        user = authenticate(request, username=username_or_email, password=password)
+        
+        # If authentication with username fails, try with email
+        if user is None:
+            try:
+                user_obj = CustomUser.objects.get(email=username_or_email)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except CustomUser.DoesNotExist:
+                pass
+        
+        if user is not None:
+            auth_login(request, user)
+            if user.role == 'admin':
+                return redirect('admin_dashboard')
+            elif user.role == 'staff':
+                return redirect('staff_dashboard')
+            else:
+                return redirect('client_page')
+        else:
+            return render(request, 'users/login.html', {'error': 'Invalid credentials'})
+    return render(request, 'users/login.html')
+
+# staff list
 @login_required
 @role_required('admin')
 def staff_list(request):
@@ -163,7 +204,8 @@ def staff_list(request):
     if not request.user.is_authenticated:
         return render(request, '403.html', {'error': 'You are not authorized to view this page'})
     return render(request, 'staff/staff_list.html', {'staffs': staffs})
-  
+
+# update staff  
 @login_required
 def update_staff(request, staff_id):
     # Ensure only admin can update staff
@@ -209,6 +251,7 @@ def update_staff(request, staff_id):
         'branch': branch_object
     })
 
+# create new staff
 @login_required
 def create_staff(request):
     branch_object = Branch.objects.all();
@@ -251,6 +294,7 @@ def create_staff(request):
     
     return render(request, 'staff/create_staff.html', {'branch': branch_object})
 
+# update the admin/business profile
 @login_required
 @role_required('admin')
 def update_admin_profile(request):
@@ -325,6 +369,7 @@ def update_admin_profile(request):
         'accounting_methods': Business.accounting_method,
     })
 
+# create a new branch
 @login_required
 @role_required('admin')
 def create_branch(request):
@@ -374,6 +419,7 @@ def create_branch(request):
     # For GET request, just render the form
     return render(request, 'branch/create_branch.html')
 
+# update the branch 
 @login_required
 @role_required('admin')
 def update_branch_view(request, branch_id):
@@ -404,6 +450,7 @@ def update_branch_view(request, branch_id):
         'business': branch.business
     })
 
+# assign staff to branch
 @login_required    
 def assign_staff_to_branch(request):
     if request.method == 'POST':
@@ -415,43 +462,9 @@ def assign_staff_to_branch(request):
         
         staff.branch = branch
         staff.save()  # Business auto-assigned via save() method
-        
-def login_view(request):
-    if request.user.is_authenticated:
-        # Redirect already authenticated users to their respective dashboards
-        if request.user.role == 'admin':
-            return redirect('admin_dashboard')
-        elif request.user.role == 'staff':
-            return redirect('staff_dashboard')
-        
-    if request.method == 'POST':
-        username_or_email = request.POST['username']
-        password = request.POST['password']
-        
-        # Try to authenticate with username first
-        user = authenticate(request, username=username_or_email, password=password)
-        
-        # If authentication with username fails, try with email
-        if user is None:
-            try:
-                user_obj = CustomUser.objects.get(email=username_or_email)
-                user = authenticate(request, username=user_obj.username, password=password)
-            except CustomUser.DoesNotExist:
-                pass
-        
-        if user is not None:
-            auth_login(request, user)
-            if user.role == 'admin':
-                return redirect('admin_dashboard')
-            elif user.role == 'staff':
-                return redirect('staff_dashboard')
-            else:
-                return redirect('client_page')
-        else:
-            return render(request, 'users/login.html', {'error': 'Invalid credentials'})
-    return render(request, 'users/login.html')
 
 
+# render the admin dashboard
 @login_required
 @role_required('admin')
 def admin_dashboard(request):
@@ -463,10 +476,15 @@ def admin_dashboard(request):
     # Get shipments and clients related to the business
     shipments = Shipment.objects.filter(business=business, shipment_complete=False)
     clients = Client.objects.filter(business=business)
+    
+    # Convert QuerySets to JSON-compatible format
+    shipments_json = serializers.serialize('json', shipments)
+    clients_json = serializers.serialize('json', clients)
 
     context = {
         'business': business,
         'shipments': shipments,
+        'shipments_json': shipments_json,
         'clients': clients,
         'total_shipments': shipments.count(),
         'total_clients': clients.count(),
@@ -474,6 +492,7 @@ def admin_dashboard(request):
 
     return render(request, 'dash/admin_dashboard.html', context)
 
+# render the staff dashboard
 @login_required
 @role_required('staff')
 def staff_dashboard(request):

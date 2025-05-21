@@ -63,7 +63,7 @@
 
 <body>
     <div class="header">
-        <h2>{{ business.name }}</h2>
+        <h2>{{ invoice.shipment.business.name | default:'N/A' }}</h2>
         <h3>INVOICE #{{ invoice.invoice_number }}</h3>
         <p>
             Issued: {{ invoice.issued_at|date:"M d, Y" }} |
@@ -85,8 +85,11 @@
             <strong>Shipment Details:</strong><br>
             Tracking #: {{ invoice.shipment.tracking_number }}<br>
             Type: {{ invoice.shipment.get_shipment_type_display }}<br>
+            {% if invoice.shipment.shipment_type == 'air' %}
             Weight: {{ invoice.shipment.weight }} kg<br>
-            Volume: {{ invoice.shipment.volume }} m³
+            {% else %}
+            Volume: {{ invoice.shipment.voulume }} m³
+            {% endif %}
         </div>
         <div style="clear: both;"></div>
     </div>

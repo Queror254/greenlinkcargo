@@ -83,10 +83,19 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'invoice_detail' shipment.invoice.id %}">
-                                        Invoice
+                                    <a class="dropdown-item" href="{% url 'invoice_generate' shipment.id %}">
+                                        Generate Invoice
                                     </a>
                                 </li>
+                                {% if shipment.invoice %}
+                                <a class="dropdown-item" href="{% url 'invoice_detail' shipment.invoice.id %}">
+                                    View Invoice
+                                </a>
+                                {% else %}
+                                <a class="dropdown-item disabled" href="#">
+                                    No Invoice
+                                </a>
+                                {% endif %}
                                 <li>
                                     <a class="dropdown-item" href="{% url 'generate_receipt' shipment.id %}">
                                         Shipment Receipt

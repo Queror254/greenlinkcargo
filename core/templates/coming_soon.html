@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <img src="{% static 'images/under-construction.svg' %}" alt="Coming Soon" class="img-fluid"
+                            style="max-height: 200px;">
+                    </div>
+                    <h1 class="display-4 text-primary mb-3">Coming Soon!</h1>
+                    <p class="lead mb-4">
+                        We're working hard to bring you this exciting new feature.
+                        Please check back later!
+                    </p>
+                    <div class="countdown-container mb-4">
+                        <h5 class="mb-3">Estimated Launch:</h5>
+                        <div id="countdown" class="d-flex justify-content-center gap-3"></div>
+                    </div>
+                    <a href="/" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Countdown timer (optional)
+    document.addEventListener('DOMContentLoaded', function () {
+        const launchDate = new Date('2025-5-25').getTime();
+        const countdown = document.getElementById('countdown');
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (distance > 0) {
+                countdown.innerHTML = `
+                <div class="countdown-item bg-light rounded p-2 shadow-sm">
+                    <div class="display-5 fw-bold">${days}</div>
+                    <div class="small">Days</div>
+                </div>
+                <div class="countdown-item bg-light rounded p-2 shadow-sm">
+                    <div class="display-5 fw-bold">${hours}</div>
+                    <div class="small">Hours</div>
+                </div>
+                <div class="countdown-item bg-light rounded p-2 shadow-sm">
+                    <div class="display-5 fw-bold">${minutes}</div>
+                    <div class="small">Minutes</div>
+                </div>
+            `;
+            } else {
+                countdown.innerHTML = '<div class="alert alert-success">Feature launched!</div>';
+            }
+        };
+
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+    });
+</script>
+{% endblock %}

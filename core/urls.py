@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views as user_views
+from .views import coming_soon
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +27,5 @@ urlpatterns = [
     path('settings/', include('setting_app.urls')),
     
     path('', user_views.login_view, name='loginhome'),
+    path('features/coming-soon/', coming_soon, name='coming_soon'),
 ]

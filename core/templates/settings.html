@@ -110,7 +110,7 @@
         <nav class="settings-sidebar-nav">
             {% block sidebar_nav %}
             <!-- Default navigation items -->
-            <a href="{% url 'general_settings' %}" class="settings-nav-item active">
+            <a href="{% url 'general_settings' %}" class="settings-nav-item">
                 <span>Business</span>
             </a>
 
@@ -121,20 +121,15 @@
             <a href="{% url 'shipping_rate_settings' %}" class="settings-nav-item">
                 <span>Shipping Rates</span>
             </a>
-
-            <a href="#" class="settings-nav-item">
-                <span>Additional Costs</span>
-            </a>
-
-            <a href="#" class="settings-nav-item">
+            <!-- <a href="#" class="settings-nav-item">
                 <span>Shipping</span>
             </a>
 
             <a href="#" class="settings-nav-item">
                 <span>Users</span>
-            </a>
+            </a> -->
 
-            <a href="#" class="settings-nav-item">
+            <a href="{% url 'permission_settings' %}" class="settings-nav-item">
                 <span>Permissions</span>
             </a>
             {% endblock %}

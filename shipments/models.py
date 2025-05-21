@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 from django.db.models import Sum
+from decimal import Decimal
+
 
 
 
@@ -39,13 +41,20 @@ class Invoice(models.Model):
     
     
     def save(self, *args, **kwargs):
+        from setting_app.models import Taxes
+        tax = Taxes.objects.first();
+        if tax:
+            tax_rate = tax.rate / 100
+        else : 
+            tax_rate = 0.1 #10% tax
+            
         if not self.invoice_number:
             self.invoice_number = self.generate_invoice_number()
         
         # Ensure financial fields are in sync with shipment
         if not self.subtotal or not self.total_amount:
             self.subtotal = self.shipment_cost
-            self.tax_amount = self.subtotal * 0.1
+            self.tax_amount = self.subtotal * tax_rate
             self.total_amount = self.subtotal + self.tax_amount
             
         super().save(*args, **kwargs)
@@ -144,39 +153,68 @@ class Shipment(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     address = models.CharField(max_length=200, blank=True, null=True)
     estimated_delivery_date = models.DateField(blank=True, null=True)
-    shipment_cost = models.FloatField(default=0.0, blank=True, null=True)
+    shipment_cost = models.DecimalField(
+        max_digits=10,  # Max total digits (including decimals)
+        decimal_places=2,  # Number of decimal places (e.g., 2 for cents)
+        default=Decimal('0.00')
+    )
     status = models.CharField(max_length=200,)
     shipment_complete = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     @property
     def calculate_rate(self):
         from setting_app.models import Additionalcosts, Rates
-        try:
-            # Get the rates for this business
-            rates = Rates.objects.get(business=self.business)
-        except Rates.DoesNotExist:
-            # Fallback rates if none are set
-            rates = Rates(weight_rate=10, cbm_rate=5)  # Default rates
+        
+        # Initialize with default rates
+        default_rates = {
+            'weight_rate': Decimal('10.00'),
+            'cbm_rate': Decimal('5.00')
+        }
+        rates = Rates(**default_rates)
+        
+        try:            
+            # Check for route-specific rates
+            if self.origin == 'Dubai':
+                route_name = 'DubaiKE'
+                rates = Rates.objects.get(business=self.business, route=route_name)
+                
+            elif self.origin == 'Turkey':
+                route_name = 'TurkeyKE'
+                rates = Rates.objects.get(business=self.business, route=route_name)
             
-        weight_rate = self.weight * rates.weight_rate
-        volume_rate = self.volume * rates.cbm_rate
-        #
-        # Calculate sum of all additional costs for this shipment
-        additional_costs_sum = Additionalcosts.objects.filter(
+            else:
+                route_name = "default"
+                rates = Rates.objects.get(business=self.business, route=route_name)
+                
+                
+        except Rates.DoesNotExist:
+            pass  # Keep the initialized rates
+        
+        # Convert all values to Decimal for calculations
+        weight = Decimal(str(self.weight))
+        volume = Decimal(str(self.volume))
+        
+        # Calculate base rates
+        weight_rate = weight * rates.weight_rate
+        volume_rate = volume * rates.cbm_rate
+        
+        # Calculate additional costs
+        additional_costs = Decimal('0.00')
+        cost_aggregate = Additionalcosts.objects.filter(
             shipment=self
         ).aggregate(
             total=Sum('value')
-        )['total'] or 0
+        )['total']
         
+        if cost_aggregate is not None:
+            additional_costs = Decimal(str(cost_aggregate))
+        
+        # Return appropriate rate based on shipment type
         if self.shipment_type == 'air':
-        # Air shipments use weight-based calculation
-            return weight_rate + additional_costs_sum
-        else :
-            # Sea shipments use volume-based calculation
-            return volume_rate + additional_costs_sum
-
+            return (weight_rate + additional_costs).quantize(Decimal('0.00'))
+        return (volume_rate + additional_costs).quantize(Decimal('0.00'))
 
     def save(self, *args, **kwargs):
         # Auto-generate the airwaybill or seawaybill if not provided
@@ -193,9 +231,21 @@ class Shipment(models.Model):
     
     def create_invoice(self):
         if not hasattr(self, 'invoice'):
-            # Use either the calculated rate or manual shipment_cost, whichever is higher
-            subtotal = max(self.calculate_rate, self.shipment_cost or 0)
-            tax_amount = subtotal * 0  # Example 10% tax
+            # Convert all values to Decimal for invoice calculations
+            calculated_rate = Decimal(str(self.calculate_rate))
+            manual_cost = Decimal(str(self.shipment_cost or 0))
+            
+            # Use the higher of calculated rate or manual cost
+            subtotal = max(calculated_rate, manual_cost)
+            
+            from setting_app.models import Taxes
+            try:
+                tax = Taxes.objects.first()
+                tax_rate = Decimal(str(tax.rate)) / Decimal('100') if tax else Decimal('0.10')
+            except Exception:
+                tax_rate = Decimal('0.10')  # 10% as fallback
+            
+            tax_amount = subtotal * tax_rate
             total_amount = subtotal + tax_amount
             
             return Invoice.objects.create(

@@ -66,8 +66,11 @@
     <div class="divider">
         <strong>ORIGIN:</strong> {{ shipment.origin }}<br>
         <strong>DESTINATION:</strong> {{ shipment.destination }}<br>
+        {% if shipment.shipment_type == 'air' %}
         <strong>WEIGHT:</strong> {{ shipment.weight }} kg<br>
+        {% else %}
         <strong>VOLUME:</strong> {{ shipment.volume }} m³<br>
+        {% endif %}
     </div>
 
     <div class="divider"></div>

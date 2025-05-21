@@ -4,15 +4,21 @@ from users.models import Business, Branch
 from django.contrib.auth.decorators import login_required
 
 @login_required
+# render client list
 def client_list(request):
     clients = Client.objects.all()  # Fetch all clients
     return render(request, 'clients/client_list.html', {'clients': clients})
 
 @login_required
+# create client logic
 def create_client(request):
+    #get the current logged in user
     user = request.user
+    
+    #initialize the branch variable
+    branch=None
+    #fetch the business based on the user role
     if user.role == 'admin':
-        branch=None
         business = get_object_or_404(Business, owner=user)
     else:
         branch = user.branch 
@@ -34,14 +40,16 @@ def create_client(request):
         )
         return redirect('client_list')  # Redirect after successful creation
 
-    return render(request, 'clients/create_client.html')
+    return render(request, 'clients/create_client.html') #render the client creation form
 
 @login_required
+#render client details
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
     return render(request, 'clients/client_detail.html', {'client': client})
 
 @login_required
+#update client logic
 def update_client(request, pk):
     client = get_object_or_404(Client, pk=pk)
 
@@ -59,6 +67,7 @@ def update_client(request, pk):
 
 
 @login_required
+#delete client logic
 def delete_client(request, pk):
     client = get_object_or_404(Client, id=pk)
     client.delete()

@@ -13,20 +13,24 @@ from django.template.loader import get_template, render_to_string
 from xhtml2pdf import pisa
 from django.utils import timezone
 from django.db.models import Sum
+from decimal import Decimal
 
 
+# render the clients ledger
 class ClientLedgerView(DetailView):
+    # initialize the model and the template
     model = Client
     template_name = 'shipments/client_ledger.html'
     
+    # get the contex data
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         invoices = Invoice.objects.filter(client=self.object).select_related('shipment')
-        
+        # calaculate total balance due across all invoices under said client
+        # i think later on i can use the total_amount instead of balance_due
+        total_balance_due = sum(invoice.balance_due for invoice in invoices)
         context['invoices'] = invoices
-        context['total_owed'] = invoices.aggregate(
-            total=Sum('total_amount')
-        )['total'] or 0
+        context['total_owed'] = total_balance_due
         context['total_paid'] = Payment.objects.filter(
             invoice__client=self.object
         ).aggregate(
@@ -35,6 +39,7 @@ class ClientLedgerView(DetailView):
         
         return context
  
+# render an invoice details page
 class InvoiceDetailView(DetailView):
     model = Invoice
     template_name = 'shipments/invoice_detail.html'
@@ -45,6 +50,7 @@ class InvoiceDetailView(DetailView):
         context['payments'] = self.object.payments.all()
         return context
 
+# generate a downloadable invoice pdf
 @login_required
 def generate_invoice_pdf(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
@@ -61,6 +67,8 @@ def generate_invoice_pdf(request, pk):
     pisa.CreatePDF(html, dest=response)
     return response
 
+# update payment status logic
+#@login_required
 class UpdatePaymentStatusView(UpdateView):
     model = Invoice
     fields = ['payment_status']  # Make sure this matches your form field
@@ -98,6 +106,7 @@ class UpdatePaymentStatusView(UpdateView):
     def get_success_url(self):
         return reverse('invoice_detail', kwargs={'pk': self.object.pk})
 
+# generate a shipment receipt to be attached to shipment
 @login_required   
 def generate_shipment_receipt(request, shipment_id):
     shipment = Shipment.objects.get(id=shipment_id)
@@ -126,6 +135,7 @@ def generate_shipment_receipt(request, shipment_id):
         return HttpResponse('PDF generation error')
     return response
 
+# update the shipment complete status true or false
 @login_required
 def mark_shipment_complete(request, pk):
     shipment = get_object_or_404(Shipment, pk=pk)
@@ -140,6 +150,7 @@ def mark_shipment_complete(request, pk):
 
     return redirect('shipment_detail', pk=shipment.pk)  # or wherever you want to redirect
 
+# fetch & render a shipment list
 @login_required
 def getall_shipment(request):
     shipments = Shipment.objects.all()
@@ -147,7 +158,8 @@ def getall_shipment(request):
     if not request.user.is_authenticated:
         return render(request, '403.html', {'error': 'You are not authorized to view this shipment'})
     return render(request, 'shipments/shipment_list.html', {'shipments': shipments})
-    
+
+# create shipment    
 @login_required
 def createshipment_view(request):
     user = request.user
@@ -194,7 +206,7 @@ def createshipment_view(request):
         
         shipment_type = request.POST.get('shipment_type')
         shipment_quantity = request.POST.get('quantity');
-        shipment_cost = request.POST.get('shipment_cost')
+        #shipment_cost = request.POST.get('shipment_cost')
         weight = request.POST.get('weight')
         volume = request.POST.get('volume')
         origin = request.POST.get('origin')
@@ -255,12 +267,12 @@ def createshipment_view(request):
             })
 
         # Calculate shipment cost
-        if shipment_type == 'air':
-            shipment_cost = weight * rate.weight_rate
-        elif shipment_type == 'sea':
-            shipment_cost = volume * rate.cbm_rate
-        else:
-            shipment_cost = 0.0  # Default case (should not happen)
+        #if shipment_type == 'air':
+        #    shipment_cost = Decimal(str(weight)) * rate.weight_rate
+        #elif shipment_type == 'sea':
+        #    shipment_cost = Decimal(str(volume)) * rate.cbm_rate
+        #else:
+        #    shipment_cost = 0.0  # Default case (should not happen)
 
         # Create the shipment
         shipment = Shipment.objects.create(
@@ -279,14 +291,16 @@ def createshipment_view(request):
             city=tocity,
             address=toaddress,
             status=status,
-            shipment_cost=shipment_cost  # Save calculated shipment cost
+            shipment_cost=0.0
         )
+        shipment.shipment_cost = shipment.calculate_rate
+        shipment.save()
 
         return redirect('shipment_detail', shipment_id=shipment.id)
 
     return render(request, 'shipments/create_shipment.html', {'clients': clients})
 
-
+# render shipment detail page
 @login_required
 def shipment_detail(request, shipment_id):
     shipment = get_object_or_404(Shipment, id=shipment_id)
@@ -299,6 +313,7 @@ def shipment_detail(request, shipment_id):
 
     return render(request, 'shipments/shipment_detail.html', {'shipment': shipment, 'client': client})
 
+# update shipment
 @login_required
 def update_shipment(request, shipment_id):
     shipment = get_object_or_404(Shipment, id=shipment_id)
@@ -320,12 +335,15 @@ def update_shipment(request, shipment_id):
 
     return render(request, 'shipments/update_shipment.html', {'shipment': shipment})
 
+# delete shipment
 @login_required
 def delete_shipment(request, shipment_id):
     shipment = get_object_or_404(Shipment, id=shipment_id)
     shipment.delete()
     return redirect('getall_shipment')
 
+# logic to track the shipment status
+@login_required
 def shipment_tracker(request):
     tracking_number = request.GET.get('tracking_number')
     shipment = None
@@ -338,7 +356,8 @@ def shipment_tracker(request):
 
     return render(request, 'dash/shipment_tracker.html', {'shipment': shipment, 'client': client, 'tracking_number': tracking_number})
 
-
+# logic to track the shipment status
+@login_required
 def track_shipment(request):
     tracking_number = request.GET.get('tracking_number')
     shipment = None
@@ -351,6 +370,8 @@ def track_shipment(request):
 
     return render(request, 'shipments/track_shipment.html', {'shipment': shipment, 'client': client, 'tracking_number': tracking_number})
 
+# generate the shipment invoice
+@login_required
 def generate_invoice(request, shipment_id):
     shipment = get_object_or_404(Shipment, id=shipment_id)
     
@@ -370,29 +391,31 @@ def generate_invoice(request, shipment_id):
 
     return redirect('invoice_detail', invoice.id)
 
-def invoice_detail(request, invoice_id):
-    invoice = get_object_or_404(Invoice, id=invoice_id)
-    return render(request, 'invoices/invoice_detail.html', {'invoice': invoice})
+# not currently in use
+#def invoice_detail(request, invoice_id):
+#    invoice = get_object_or_404(Invoice, id=invoice_id)
+#    return render(request, 'invoices/invoice_detail.html', {'invoice': invoice})
 
-def generate_invoice_pdfx(request, invoice_id):
+#@login_required
+#def generate_invoice_pdfx(request, invoice_id):
     # Fetch the existing invoice
-    invoice = get_object_or_404(Invoice, id=invoice_id)
-
+#    invoice = get_object_or_404(Invoice, id=invoice_id)
+#
     # Load the invoice template
-    template_path = 'invoices/invoice_pdf.html'
-    context = {'invoice': invoice}
-    template = get_template(template_path)
-    html = template.render(context)
+#    template_path = 'invoices/invoice_pdf.html'
+#    context = {'invoice': invoice}
+#   template = get_template(template_path)
+#   html = template.render(context)
 
     # Create a PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.id}.pdf"'
+#    response = HttpResponse(content_type='application/pdf')
+#    response['Content-Disposition'] = f'attachment; filename="invoice_{invoice.id}.pdf"'
 
     # Generate the PDF
-    pisa_status = pisa.CreatePDF(html, dest=response)
+#    pisa_status = pisa.CreatePDF(html, dest=response)
 
-    if pisa_status.err:
-        return HttpResponse('Error generating PDF <pre>' + html + '</pre>')
+#    if pisa_status.err:
+#        return HttpResponse('Error generating PDF <pre>' + html + '</pre>')
 
-    return response
+#   return response
 

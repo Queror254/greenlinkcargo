@@ -1,12 +1,21 @@
 from django.urls import path
-from .views import business_settings, update_weight_rate, update_cbm_rate, index
+from .views import update_weight_rate, update_cbm_rate, permissions
 from users.views import update_admin_profile
 from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path("test/", index, name="test_url"),
-    path("rates/", business_settings, name="shipping_rate_settings"),
+    # permissions url under development
+    path('permissions/', permissions, name='permission_settings'),
+    # Shipping Rates urls
+    path('rates/', views.shipping_rate_settings, name='shipping_rate_settings'),
+    path('rates/create/', views.create_shipping_rate, name='create_shipping_rate'),
+    path('rates/update/<int:rate_id>/', views.update_shipping_rate, name='update_shipping_rate'),
+    path('rates/delete/<int:rate_id>/', views.delete_shipping_rate, name='delete_shipping_rate'),
+    path('rates/update-weight/', views.update_weight_rate, name='update_weight_rate'),
+    path('rates/update-cbm/', views.update_cbm_rate, name='update_cbm_rate'),
+
+    # bussiness settings and rate settings
     path('business/', update_admin_profile, name="general_settings"),
     path("update-weight/", update_weight_rate, name="update_weight_rate"),
     path("update-cbm/", update_cbm_rate, name="update_cbm_rate"),

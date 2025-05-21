@@ -28,7 +28,11 @@
                             <p>
                                 Tracking #: {{ invoice.shipment.tracking_number }}<br>
                                 Type: {{ invoice.shipment.get_shipment_type_display }}<br>
+                                {% if invoice.shipment.shipment_type == 'air' %}
                                 Weight: {{ invoice.shipment.weight }} kg<br>
+                                {% else %}
+                                Volume: {{ invoice.shipment.voulume }}
+                                {% endif %}
                                 Status: {{ invoice.shipment.get_status_display }}
                             </p>
                         </div>

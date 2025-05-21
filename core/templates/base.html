@@ -51,7 +51,7 @@
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
         <!--begin::Header-->
-        <nav class="app-header navbar navbar-expand bg-body">
+        <nav class="app-header navbar navbar-expand bg-body-secondary shadow" data-bs-theme="dark">
             <!--begin::Container-->
             <div class="container-fluid">
                 <!--begin::Start Navbar Links-->
@@ -91,78 +91,10 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-bs-toggle="dropdown" href="#">
                             <i class="bi bi-chat-text"></i>
-                            <span class="navbar-badge badge text-bg-danger">3</span>
+                            <!-- <span class="navbar-badge badge text-bg-danger">3</span>-->
                         </a>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                            <a href="#" class="dropdown-item">
-                                <!--begin::Message-->
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <img src="../../dist/assets/img/user1-128x128.jpg" alt="User Avatar"
-                                            class="img-size-50 rounded-circle me-3" />
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="dropdown-item-title">
-                                            Brad Diesel
-                                            <span class="float-end fs-7 text-danger"><i
-                                                    class="bi bi-star-fill"></i></span>
-                                        </h3>
-                                        <p class="fs-7">Call me whenever you can...</p>
-                                        <p class="fs-7 text-secondary">
-                                            <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                                        </p>
-                                    </div>
-                                </div>
-                                <!--end::Message-->
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <!--begin::Message-->
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <img src="../../dist/assets/img/user8-128x128.jpg" alt="User Avatar"
-                                            class="img-size-50 rounded-circle me-3" />
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="dropdown-item-title">
-                                            John Pierce
-                                            <span class="float-end fs-7 text-secondary">
-                                                <i class="bi bi-star-fill"></i>
-                                            </span>
-                                        </h3>
-                                        <p class="fs-7">I got your message bro</p>
-                                        <p class="fs-7 text-secondary">
-                                            <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                                        </p>
-                                    </div>
-                                </div>
-                                <!--end::Message-->
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <!--begin::Message-->
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <img src="../../dist/assets/img/user3-128x128.jpg" alt="User Avatar"
-                                            class="img-size-50 rounded-circle me-3" />
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="dropdown-item-title">
-                                            Nora Silvester
-                                            <span class="float-end fs-7 text-warning">
-                                                <i class="bi bi-star-fill"></i>
-                                            </span>
-                                        </h3>
-                                        <p class="fs-7">The subject goes here</p>
-                                        <p class="fs-7 text-secondary">
-                                            <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                                        </p>
-                                    </div>
-                                </div>
-                                <!--end::Message-->
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                            <!--messages-->
                         </div>
                     </li>
                     <!--end::Messages Dropdown Menu-->
@@ -170,27 +102,10 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-bs-toggle="dropdown" href="#">
                             <i class="bi bi-bell-fill"></i>
-                            <span class="navbar-badge badge text-bg-warning">15</span>
+                            <!--<span class="navbar-badge badge text-bg-warning">15</span>-->
                         </a>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                            <span class="dropdown-item dropdown-header">15 Notifications</span>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="bi bi-envelope me-2"></i> 4 new messages
-                                <span class="float-end text-secondary fs-7">3 mins</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="bi bi-people-fill me-2"></i> 8 friend requests
-                                <span class="float-end text-secondary fs-7">12 hours</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="bi bi-file-earmark-fill me-2"></i> 3 new reports
-                                <span class="float-end text-secondary fs-7">2 days</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
+                            <!--notifications-->
                         </div>
                     </li>
                     <!--end::Notifications Dropdown Menu-->
@@ -260,7 +175,7 @@
                         class="brand-image opacity-75 shadow" />
                     <!--end::Brand Image-->
                     <!--begin::Brand Text-->
-                    <span class="brand-text fw-light"> Business </span>
+                    <span class="brand-text fw-light"> ShipSyst </span>
                     <!--end::Brand Text-->
 
                     {% endif %}
@@ -406,51 +321,15 @@
                                 <i class="nav-icon bi bi-clipboard-fill"></i>
                                 <p>
                                     Reports
-                                    <span class="nav-badge badge text-bg-secondary me-3">6</span>
+                                    <!--<span class="nav-badge badge text-bg-secondary me-3">6</span> -->
                                     <i class="nav-arrow bi bi-chevron-right"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="./layout/unfixed-sidebar.html" class="nav-link">
+                                    <a href="{% url 'coming_soon' %}" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
-                                        <p>Default Sidebar</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/fixed-sidebar.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Fixed Sidebar</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/layout-custom-area.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Layout <small>+ Custom Area </small></p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/sidebar-mini.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Sidebar Mini</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/collapsed-sidebar.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Sidebar Mini <small>+ Collapsed</small></p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/logo-switch.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Sidebar Mini <small>+ Logo Switch</small></p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="./layout/layout-rtl.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Layout RTL</p>
+                                        <p>coming soon</p>
                                     </a>
                                 </li>
                             </ul>
@@ -474,41 +353,6 @@
                                     <a href="{% url 'shipping_rate_settings' %}" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
                                         <p>rates</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-pencil-square"></i>
-                                <p>
-                                    Forms
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="./forms/general.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>General Elements</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-table"></i>
-                                <p>
-                                    Tables
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="./tables/simple.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Simple Tables</p>
                                     </a>
                                 </li>
                             </ul>
@@ -664,15 +508,190 @@
         );
         sales_chart.render();
     </script>
-    <!-- jsvectormap -->
+    <!-- jsvectormap 
     <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"
         integrity="sha256-/t1nN2956BT869E6H4V1dnt0X5pAQHPytli+1nTZm2Y=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"
         integrity="sha256-XPpPaZlU8S/HWf7FZLAncLg2SAkP8ScUTII89x9D3lY=" crossorigin="anonymous"></script>
-    <!-- jsvectormap -->
+    jsvectormap -->
 
-
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.0/dist/js/jsvectormap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.0/dist/maps/world.js"></script>
     <script>
+
+        // Aggregate route data
+        const routeData = {
+            'US-KE': {
+                completed: 0,
+                ongoing: 0,
+                total: 0,
+                from: 'US',
+                to: 'KE'
+            }
+        };
+
+        const COORDINATES = {
+            // Origins
+            'Dubai': [25.276987, 55.296249],
+            'Turkey': [39.9334, 32.8597],
+            'China': [35.8617, 104.1954],
+            'USA': [37.0902, -95.7129],
+            'India Mumbai': [19.0760, 72.8777],
+            'India New Delhi': [28.6139, 77.2090],
+
+            // Destinations
+            'Kenya': [1.2921, 36.8219],
+            'Uganda': [0.3476, 32.5825],
+            'Tanzania': [6.3690, 34.8888],
+            'Rwanda': [1.9403, 29.8739],
+            'Ethiopia': [9.1450, 40.4897]
+        };
+
+
+        // Initialize map with line connection
+        new jsVectorMap({
+            selector: '#map',
+            map: 'world',
+            zoomOnScroll: false,
+            focusOn: {
+                regions: ['US', 'KE'],
+                scale: 1.5
+            },
+            /*regionStyle: {
+                initial: {
+                    fill: '#e0e0e0'
+                }
+            },*/
+
+            lineStyle: {
+                stroke: "#676767",
+                strokeWidth: 1.5,
+                fill: '#ff5566',
+                fillOpacity: 1,
+                strokeDasharray: '6 3 6', // OR: [6, 2, 6]
+                animation: true
+            },
+
+            markers: [
+                {
+                    name: 'Dubai',
+                    coords: COORDINATES.Dubai
+                },
+                {
+                    name: 'Turkey',
+                    coords: COORDINATES.Turkey
+                },
+                {
+                    name: 'China',
+                    coords: COORDINATES.China
+                },
+                {
+                    name: 'USA',
+                    coords: COORDINATES.USA
+                },
+                {
+                    name: 'India Mumbai',
+                    coords: COORDINATES['India Mumbai']
+                },
+                {
+                    name: 'India New Delhi',
+                    coords: COORDINATES['India New Delhi']
+                },
+                {
+                    name: 'Kenya',
+                    coords: COORDINATES.Kenya
+                },/*
+                {
+                    name: 'Uganda',
+                    coords: COORDINATES.Uganda
+                },
+                {
+                    name: 'Tanzania',
+                    coords: COORDINATES.Tanzania
+                },
+                {
+                    name: 'Rwanda',
+                    coords: COORDINATES.Rwanda
+                },
+                {
+                    name: 'Ethiopia',
+                    coords: COORDINATES.Ethiopia
+                } */
+            ],
+
+            labels: {
+                markers: {
+                    // Starting from jsvectormap v1.2 the render function receives
+                    // the marker object as a first parameter and index as the second.
+                    render(marker, index) {
+                        return marker.name || marker.labelName || 'Not available'
+                    }
+                }
+            },
+
+            lines: [
+                {
+                    from: 'USA',
+                    to: 'Kenya',
+                },
+                // From Dubai
+                { from: 'Dubai', to: 'Kenya' },/*
+                { from: 'Dubai', to: 'Uganda' },
+                { from: 'Dubai', to: 'Tanzania' },
+                { from: 'Dubai', to: 'Rwanda' },
+                { from: 'Dubai', to: 'Ethiopia' },*/
+
+                // From Turkey
+                { from: 'Turkey', to: 'Kenya' },/*
+                { from: 'Turkey', to: 'Uganda' },
+                { from: 'Turkey', to: 'Tanzania' },
+                { from: 'Turkey', to: 'Rwanda' },
+                { from: 'Turkey', to: 'Ethiopia' },*/
+
+                // From China
+                { from: 'China', to: 'Kenya' },/*
+                { from: 'China', to: 'Uganda' },
+                { from: 'China', to: 'Tanzania' },
+                { from: 'China', to: 'Rwanda' },
+                { from: 'China', to: 'Ethiopia' },*/
+
+                // From USA
+                { from: 'USA', to: 'Kenya' },/*
+                { from: 'USA', to: 'Uganda' },
+                { from: 'USA', to: 'Tanzania' },
+                { from: 'USA', to: 'Rwanda' },
+                { from: 'USA', to: 'Ethiopia' },*/
+
+                // From India Mumbai
+                { from: 'India Mumbai', to: 'Kenya' },/*
+                { from: 'India Mumbai', to: 'Uganda' },
+                { from: 'India Mumbai', to: 'Tanzania' },
+                { from: 'India Mumbai', to: 'Rwanda' },
+                { from: 'India Mumbai', to: 'Ethiopia' },*/
+
+                // From India New Delhi
+                { from: 'India New Delhi', to: 'Kenya' },/*
+                { from: 'India New Delhi', to: 'Uganda' },
+                { from: 'India New Delhi', to: 'Tanzania' },
+                { from: 'India New Delhi', to: 'Rwanda' },
+                { from: 'India New Delhi', to: 'Ethiopia' }*/
+            ], /**/
+
+            onLineTooltipShow: (event, label, lineIndex) => {
+                const data = routeData['USA-Kenya'];
+                label.html(`
+                        <div style="padding: 5px">
+                            <strong>USA-Kenya Route</strong><br>
+                            Completed: ${data.completed}<br>
+                            Ongoing: ${data.ongoing}<br>
+                            Total: ${data.total}
+                        </div>
+                    `);
+            }
+        });
+    </script>
+
+    <!--<script>
         const visitorsData = {
             US: 398, // USA
             SA: 400, // Saudi Arabia
@@ -687,11 +706,11 @@
             RU: 3000, // Russia
         };
 
-        //World map by jsVectorMap
+        /*World map by jsVectorMap
         const map = new jsVectorMap({
             selector: '#world-map',
             map: 'world',
-        });
+        });*/
 
         // Sparkline charts
         const option_sparkline1 = {
@@ -777,7 +796,7 @@
 
         const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
         sparkline3.render();
-    </script>
+    </script>-->
     <!--end::Script-->
 
     {% block extra_js %}{% endblock %}

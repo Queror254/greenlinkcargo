@@ -1,0 +1,55 @@
+{% extends 'settings.html' %}
+{% load static %}
+
+{% block settings_content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'create_shipping_rate' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create New Shipping Rate
+        </a>
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Route</th>
+                            <th>Weight Rate (per kg)</th>
+                            <th>CBM Rate (per m³)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rate in rates %}
+                        <tr>
+                            <td>{{ rate.route }}</td>
+                            <td>{{ rate.weight_rate }}</td>
+                            <td>{{ rate.cbm_rate }}</td>
+                            <td>
+                                <a href="{% url 'update_shipping_rate' rate_id=rate.id %}"
+                                    class="btn btn-sm btn-warning me-2">
+                                    <i class="fas fa-edit">Edit</i>
+                                </a>
+                                <form method="POST" action="{% url 'delete_shipping_rate' rate_id=rate.id %}"
+                                    class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this rate?')">
+                                        <i class="fas fa-trash">Delete</i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No shipping rates found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
