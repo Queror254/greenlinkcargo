@@ -28,8 +28,12 @@ class Taxes(models.Model):
         verbose_name='Tax percentage',
         help_text='Enter the tax rate as a percentage, e.g., 16.00 for 16%'
     )
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,  null=True, blank=True)
     
 class Additionalcosts(models.Model):
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     value = models.DecimalField(max_digits=20, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,  null=True, blank=True)

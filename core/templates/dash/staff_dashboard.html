@@ -134,7 +134,7 @@
             <!-- /.Start col -->
             <!-- Start col -->
             <div class="col-lg-5 connectedSortable">
-                <div class="card text-white bg-primary bg-gradient border-primary mb-4">
+                <div class="card text-black mb-4">
                     <div class="card-header border-0">
                         <h3 class="card-title">Active Routes</h3>
                         <div class="card-tools">
@@ -145,7 +145,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div id="world-map" style="height: 220px"></div>
+                        <div id="map" style="height: 220px"></div>
                     </div>
                     <div class="card-footer border-0">
                         <!--begin::Row-->
@@ -237,6 +237,12 @@
                                                     </a>
                                                 </li>
                                                 <li>
+                                                    <a class="dropdown-item additional_cost-button"
+                                                        href="{% url 'additionalcosts-create' %}?shipment_id={{ shipment.id }}">
+                                                        Additional cost
+                                                    </a>
+                                                </li>
+                                                <li>
                                                     <a class="dropdown-item update_contact_status"
                                                         href="{% url 'delete_shipment' shipment.id %}">
                                                         Delete
@@ -247,10 +253,20 @@
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item"
-                                                        href="{% url 'invoice_detail' shipment.invoice.id %}">
-                                                        Invoice
+                                                        href="{% url 'invoice_generate' shipment.id %}">
+                                                        Generate Invoice
                                                     </a>
                                                 </li>
+                                                {% if shipment.invoice %}
+                                                <a class="dropdown-item"
+                                                    href="{% url 'invoice_detail' shipment.invoice.id %}">
+                                                    View Invoice
+                                                </a>
+                                                {% else %}
+                                                <a class="dropdown-item disabled" href="#">
+                                                    No Invoice
+                                                </a>
+                                                {% endif %}
                                                 <li>
                                                     <a class="dropdown-item"
                                                         href="{% url 'generate_receipt' shipment.id %}">

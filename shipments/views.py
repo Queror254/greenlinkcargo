@@ -14,6 +14,7 @@ from xhtml2pdf import pisa
 from django.utils import timezone
 from django.db.models import Sum
 from decimal import Decimal
+from setting_app.models import Additionalcosts
 
 
 # render the clients ledger
@@ -39,7 +40,8 @@ class ClientLedgerView(DetailView):
         
         return context
  
-# render an invoice details page
+
+# render the invoice detail page
 class InvoiceDetailView(DetailView):
     model = Invoice
     template_name = 'shipments/invoice_detail.html'
@@ -48,16 +50,32 @@ class InvoiceDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['payments'] = self.object.payments.all()
+        
+        # Debug output
+        print(f"Invoice ID: {self.object.id}")
+        if hasattr(self.object, 'shipment'):
+            print(f"Shipment ID: {self.object.shipment.id}")
+            costs = Additionalcosts.objects.filter(shipment=self.object.shipment)
+            print(f"Found {costs.count()} additional costs")
+            for cost in costs:
+                print(f"Cost: {cost.name} - {cost.value}")
+            context['additional_costs'] = costs
+        else:
+            print("No shipment associated")
+            context['additional_costs'] = None
+            
         return context
 
 # generate a downloadable invoice pdf
 @login_required
 def generate_invoice_pdf(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
+    additional_costs = Additionalcosts.objects.filter(shipment=invoice.shipment)
     context = {
         'invoice': invoice,
         'payments': invoice.payments.all(),
-        'business': invoice.business
+        'business': invoice.business,
+        'additional_costs': additional_costs
     }
     
     html = render_to_string('invoices/invoice_pdf.html', context)
@@ -370,26 +388,61 @@ def track_shipment(request):
 
     return render(request, 'shipments/track_shipment.html', {'shipment': shipment, 'client': client, 'tracking_number': tracking_number})
 
-# generate the shipment invoice
 @login_required
 def generate_invoice(request, shipment_id):
+    from decimal import Decimal
+    from setting_app.models import Taxes
+    
     shipment = get_object_or_404(Shipment, id=shipment_id)
     
-    # Ensure an invoice does not already exist
+    # Check if invoice already exists
     if Invoice.objects.filter(shipment=shipment).exists():
-        return redirect('invoice_detail', shipment.invoice.id)
+        invoice = Invoice.objects.get(shipment=shipment)
+        
+        # Recalculate financials for existing invoice
+        tax = Taxes.objects.first()
+        tax_rate = Decimal(tax.rate / 100) if tax else Decimal('0.10')
+        
+        # Calculate base amount
+        subtotal = shipment.shipment_cost
+        tax_amount = subtotal * tax_rate
+        
+        # Calculate additional costs
+        additional_costs = Additionalcosts.objects.filter(shipment=shipment)
+        additional_costs_sum = sum(Decimal(str(cost.value)) for cost in additional_costs)
+        
+        # Update invoice with recalculated values
+        invoice.subtotal = subtotal
+        invoice.tax_amount = tax_amount
+        invoice.total_amount = subtotal + tax_amount + additional_costs_sum
+        invoice.save()
+        
+        return redirect('invoice_detail', invoice.id)
+    else:
+        # Create new invoice
+        tax = Taxes.objects.first()
+        tax_rate = Decimal(tax.rate / 100) if tax else Decimal('0.10')
+        
+        # Calculate base amount
+        subtotal = shipment.shipment_cost
+        tax_amount = subtotal * tax_rate
+        
+        # Calculate additional costs
+        additional_costs = Additionalcosts.objects.filter(shipment=shipment)
+        additional_costs_sum = sum(Decimal(str(cost.value)) for cost in additional_costs)
+        
+        # Create invoice with all correct values
+        invoice = Invoice.objects.create(
+            shipment=shipment,
+            client=shipment.client,
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total_amount=subtotal + tax_amount + additional_costs_sum,
+            invoice_number=f"INV-{get_random_string(8).upper()}"
+        )
+        
+        return redirect('invoice_detail', invoice.id)
 
-    # Generate a unique invoice number
-    invoice_number = f"INV-{get_random_string(8).upper()}"  
-
-    invoice = Invoice.objects.create(
-        shipment=shipment,
-        client=shipment.client,
-        total_amount=shipment.calculate_rate,  # Assuming rate is the cost
-        invoice_number=invoice_number  # Assigning the unique number
-    )
-
-    return redirect('invoice_detail', invoice.id)
 
 # not currently in use
 #def invoice_detail(request, invoice_id):

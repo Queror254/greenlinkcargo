@@ -1,14 +1,34 @@
+from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Rates, Taxes, Additionalcosts
 from .forms import TaxesForm, AdditionalCostsForm, AdditionalCostFormSet
 from shipments.models import Shipment, Business
 
+# logic for role based access
+def role_required(required_role):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return HttpResponseForbidden("You must be logged in to access this page.", status=403)
+
+            if hasattr(request.user, 'role') and request.user.role == required_role:
+                return view_func(request, *args, **kwargs)
+            
+            return render(request, '403.html', status=403)
+        
+        return _wrapped_view
+    return decorator
+ 
+ 
+@login_required
+@role_required('admin')
 # permission management logic
 def permissions(request):
     return render(request, 'permissions/permission_setting.html')
@@ -129,6 +149,7 @@ class AdditionalCostsDeleteView(DeleteView):
 
 # shipping rate settings
 @login_required
+@role_required('admin')
 def shipping_rate_settings(request):
     # fetch rates
     rates = Rates.objects.all()
@@ -140,6 +161,7 @@ def shipping_rate_settings(request):
 
 # create shipping rate
 @login_required
+@role_required('admin')
 def create_shipping_rate(request):
     # get the current logged in user: 
     user = request.user
@@ -175,6 +197,7 @@ def create_shipping_rate(request):
 
 # update shipping rates
 @login_required
+@role_required('admin')
 def update_shipping_rate(request, rate_id):
     rate = get_object_or_404(Rates, id=rate_id)
     
@@ -201,6 +224,7 @@ def update_shipping_rate(request, rate_id):
 
 # delete shipping rates
 @login_required
+@role_required('admin')
 def delete_shipping_rate(request, rate_id):
     rate = get_object_or_404(Rates, id=rate_id)
     
@@ -214,6 +238,7 @@ def delete_shipping_rate(request, rate_id):
 
 # update the weight rate
 @login_required
+@role_required('admin')
 def update_weight_rate(request):
     if request.method == "POST":
         weight_rate = request.POST.get("weight_rate")
@@ -229,6 +254,7 @@ def update_weight_rate(request):
 
 # update the cbm rate
 @login_required
+@role_required('admin')
 def update_cbm_rate(request):
     if request.method == "POST":
         cbm_rate = request.POST.get("cbm_rate")

@@ -33,31 +33,34 @@ class Invoice(models.Model):
     due_date = models.DateField(blank=True, null=True)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True,  null=True, blank=True)
 
     @property
     def shipment_cost(self):
         """Returns the actual shipment cost from the associated shipment"""
         return self.shipment.shipment_cost or self.shipment.calculate_rate
     
-    
     def save(self, *args, **kwargs):
-        from setting_app.models import Taxes
-        tax = Taxes.objects.first();
-        if tax:
-            tax_rate = tax.rate / 100
-        else : 
-            tax_rate = 0.1 #10% tax
-            
+        # Only handle invoice number generation here
         if not self.invoice_number:
-            self.invoice_number = self.generate_invoice_number()
+            self.invoice_number = f"INV-{get_random_string(8).upper()}"
+    
+        # For existing invoices, just ensure total_amount is correct
+        if self.pk and hasattr(self, 'shipment'):
+            from decimal import Decimal
+            from setting_app.models import Additionalcosts
         
-        # Ensure financial fields are in sync with shipment
-        if not self.subtotal or not self.total_amount:
-            self.subtotal = self.shipment_cost
-            self.tax_amount = self.subtotal * tax_rate
-            self.total_amount = self.subtotal + self.tax_amount
-            
+            # Get current additional costs not yet included
+            new_additional_costs = Additionalcosts.objects.filter(
+                shipment=self.shipment,
+                created_at__gt=self.updated_at
+            )
+            new_sum = sum(Decimal(str(cost.value)) for cost in new_additional_costs)
+            self.total_amount += new_sum
+    
         super().save(*args, **kwargs)
+        
         
     def update_payment_status(self):
         """Automatically determine the correct payment status"""
@@ -163,6 +166,13 @@ class Shipment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    @property
+    def total_with_additional_costs(self):
+        from decimal import Decimal
+        base = Decimal(str(self.calculate_rate))
+        additional = sum(Decimal(str(c.value)) for c in self.additionalcosts_set.all())
+        return base + additional
+
     @property
     def calculate_rate(self):
         from setting_app.models import Additionalcosts, Rates

@@ -110,6 +110,12 @@
                 <td>Tax</td>
                 <td>${{ invoice.tax_amount|floatformat:2 }}</td>
             </tr>
+            {% for cost in additional_costs %}
+            <tr>
+                <td>{{ cost.name|default:"No description" }}</td>
+                <td class="text-end">${{ cost.value }}</td>
+            </tr>
+            {% endfor %}
             <tr class="total-row">
                 <td>TOTAL</td>
                 <td>${{ invoice.total_amount|floatformat:2 }}</td>

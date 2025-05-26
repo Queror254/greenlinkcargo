@@ -55,6 +55,12 @@
                                     <td>Tax</td>
                                     <td class="text-end">${{ invoice.tax_amount|floatformat:2 }}</td>
                                 </tr>
+                                {% for cost in additional_costs %}
+                                <tr>
+                                    <td>{{ cost.name|default:"No description" }}</td>
+                                    <td class="text-end">${{ cost.value }}</td>
+                                </tr>
+                                {% endfor %}
                                 <tr class="table-active">
                                     <td><strong>TOTAL</strong></td>
                                     <td class="text-end"><strong>${{ invoice.total_amount|floatformat:2 }}</strong></td>
@@ -113,7 +119,7 @@
         </div>
 
         <div class="col-md-4">
-            <!-- Quick Actions Sidebar -->
+            <!-- Quick Actions Sidebar 
             <div class="card">
                 <div class="card-header">
                     <h5>Invoice Actions</h5>
@@ -131,7 +137,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Invoice Summary -->
             <div class="card mt-4">

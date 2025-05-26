@@ -238,6 +238,12 @@
                                                     </a>
                                                 </li>
                                                 <li>
+                                                    <a class="dropdown-item additional_cost-button"
+                                                        href="{% url 'additionalcosts-create' %}?shipment_id={{ shipment.id }}">
+                                                        Additional cost
+                                                    </a>
+                                                </li>
+                                                <li>
                                                     <a class="dropdown-item update_contact_status"
                                                         href="{% url 'delete_shipment' shipment.id %}">
                                                         Delete
